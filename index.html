@@ -674,6 +674,14 @@ function toggleMenu(){ document.getElementById('navLinks').classList.toggle('ope
 function closeMenu(){ document.getElementById('navLinks').classList.remove('open'); }
 function galScroll(dir){ document.getElementById('galGrid').scrollBy({left:dir*280,behavior:'smooth'}); }
 
+/* плавная прокрутка по якорям с учётом высоты шапки */
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click', e=>{
+    const id = a.getAttribute('href');
+    if(id.length>1){ const el=document.querySelector(id); if(el){ e.preventDefault(); window.scrollTo({top: el.getBoundingClientRect().top + window.pageYOffset - 58, behavior:'smooth'}); closeMenu(); } }
+  });
+});
+
 /* ================= СЛАЙДЕР ================= */
 const slideEls = document.querySelectorAll('.slide');
 const dotsBox = document.getElementById('dots');
@@ -716,10 +724,14 @@ function closeLightbox(){ document.getElementById('lightbox').classList.remove('
 document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ if(document.getElementById('lightbox').classList.contains('open')) closeLightbox(); else { closeBonus(); closeGallery(); } } });
 
 /* ================= РЕЗЕРВАЦИЯ ================= */
+function extraBedsFor(item, g){ return (item.extraBeds && g > item.max) ? (g - item.max) : 0; }
 function nightlyPrice(item, g, weekend){
-  if(item.ladder){ return item.base + Math.max(0,(g - item.ladder[0][0])) * item.perExtra; }
-  if(item.tiers){ const t = item.tiers.find(t=>g<=t.max) || item.tiers[item.tiers.length-1]; return weekend? t.wknd : t.wkdy; }
-  return weekend? item.wknd : item.wkdy;
+  const beds = extraBedsFor(item, g), gg = beds ? item.max : g;
+  let base;
+  if(item.ladder){ base = item.base + Math.max(0,(gg - item.ladder[0][0])) * item.perExtra; }
+  else if(item.tiers){ const t = item.tiers.find(t=>gg<=t.max) || item.tiers[item.tiers.length-1]; base = weekend? t.wknd : t.wkdy; }
+  else { base = weekend? item.wknd : item.wkdy; }
+  return base + beds*30;
 }
 function computeStay(item, g, ci, co){
   const start=new Date(ci+'T00:00:00'), end=new Date(co+'T00:00:00');
@@ -731,7 +743,12 @@ function computeStay(item, g, ci, co){
 function fillRoomSelect(){
   const sel=document.getElementById('rvRoom'); const g=parseInt(document.getElementById('rvGuests').value); const prev=sel.value;
   sel.innerHTML='';
-  [...ROOMS,...KOTECS].filter(x=>g<=x.max).forEach(x=>{ const o=document.createElement('option'); o.value=x.id; o.textContent=x.name+(x.nums?' ('+x.nums+')':''); sel.appendChild(o); });
+  [...ROOMS,...KOTECS].filter(x => g<=x.max || (x.extraBeds && g<=x.max+x.extraBeds)).forEach(x=>{
+    const eb = extraBedsFor(x, g);
+    const o=document.createElement('option'); o.value=x.id;
+    o.textContent = x.name + (x.nums?' ('+x.nums+')':'') + (eb? ' + '+eb+' çarpayı' : '');
+    sel.appendChild(o);
+  });
   if(!sel.options.length){ const o=document.createElement('option'); o.value=''; o.textContent='—'; sel.appendChild(o); }
   if([...sel.options].some(o=>o.value===prev)) sel.value=prev;
   updateReservation();
@@ -763,9 +780,9 @@ function sendReservation(){
 
 /* ================= ДАННЫЕ НОМЕРОВ ================= */
 const KOTECS = [
-  { id:"kotec3", no:"Kotec 3–8", name:"Kotec", capLabel:"2–5 nəfərlik", min:2, max:5, beds:"1 cüt, 2 tək",
+  { id:"kotec3", no:"Kotec 3–8", name:"Kotec", capLabel:"2–5 nəfərlik", min:2, max:5, extraBeds:2, beds:"1 cüt, 2 tək",
     tiers:[ {cap:"2 nəfər", min:2, max:2, wkdy:200, wknd:220}, {cap:"3–5 nəfər", min:3, max:5, wkdy:250, wknd:280} ] },
-  { id:"kotec2", no:"Kotec 2", name:"VİP Kotec", capLabel:"2–5 nəfərlik", min:2, max:5, beds:"1 cüt, 2 tək",
+  { id:"kotec2", no:"Kotec 2", name:"VİP Kotec", capLabel:"2–5 nəfərlik", min:2, max:5, extraBeds:2, beds:"1 cüt, 2 tək",
     tiers:[ {cap:"2 nəfər", min:2, max:2, wkdy:250, wknd:280}, {cap:"3–5 nəfər", min:3, max:5, wkdy:300, wknd:350} ] },
   { id:"kotec1", no:"Kotec 1", name:"VIP Deluxe", capLabel:"2–10 nəfərlik", min:2, max:10, feature:true,
     beds:"2 cüt + uşaqlar üçün yataq (4 nəfərlik)", perks:["Qapalı hovuz","Sauna","Cakuzi"],
