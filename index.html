@@ -707,31 +707,57 @@ function applyLang(l){
 }
 
 /* ================= КАРТА И МАРШРУТ ================= */
-const HOTEL_ADDRESS = "Oğuz rayonu, S. Qazıyev küç. 21, Azərbaycan";
-const HOTEL_LAT = 41.0708;
-const HOTEL_LON = 47.4583;
-(function initMap(){
-  const q = encodeURIComponent(HOTEL_ADDRESS);
-  const el = document.getElementById('mapFrame');
-  if(el && window.L){
-    const map = L.map(el, { scrollWheelZoom:false }).setView([HOTEL_LAT, HOTEL_LON], 15);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '© OpenStreetMap'
-    }).addTo(map);
-    L.marker([HOTEL_LAT, HOTEL_LON]).addTo(map)
-      .bindPopup('Panorama Resort Oğuz').openPopup();
-  }
-  const gmaps = document.getElementById('routeGmaps');
-  if(gmaps) gmaps.href = `https://www.google.com/maps/dir/?api=1&destination=${q}`;
-  const waze = document.getElementById('routeWaze');
-  if(waze) waze.href = `https://waze.com/ul?q=${q}&navigate=yes`;
+
+const HOTEL_NAME = "Panorama Resort Oğuz";
+const HOTEL_LAT = 41.071494;
+const HOTEL_LON = 47.467982;
+
+(function initMap() {
+
+    const el = document.getElementById('mapFrame');
+
+    if (el && window.L) {
+
+        const map = L.map(el, {
+            scrollWheelZoom: false
+        }).setView([HOTEL_LAT, HOTEL_LON], 15);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap'
+        }).addTo(map);
+
+        L.marker([HOTEL_LAT, HOTEL_LON])
+            .addTo(map)
+            .bindPopup(HOTEL_NAME)
+            .openPopup();
+    }
+
+    // Google Maps
+    const gmaps = document.getElementById('routeGmaps');
+    if (gmaps) {
+        gmaps.href = `https://www.google.com/maps/dir/?api=1&destination=${HOTEL_LAT},${HOTEL_LON}`;
+        gmaps.target = "_blank";
+    }
+
+    // Waze
+    const waze = document.getElementById('routeWaze');
+    if (waze) {
+        waze.href = `https://waze.com/ul?ll=${HOTEL_LAT},${HOTEL_LON}&navigate=yes`;
+        waze.target = "_blank";
+    }
+
 })();
-function toggleRouteMenu(e){
-  e.stopPropagation();
-  document.getElementById('routeMenu').classList.toggle('open');
+
+function toggleRouteMenu(e) {
+    e.stopPropagation();
+    document.getElementById('routeMenu').classList.toggle('open');
 }
-document.addEventListener('click', () => { const m=document.getElementById('routeMenu'); if(m) m.classList.remove('open'); });
+
+document.addEventListener('click', () => {
+    const menu = document.getElementById('routeMenu');
+    if (menu) menu.classList.remove('open');
+});
 
 /* ================= МЕНЮ (моб) ================= */
 function toggleMenu(){ document.getElementById('navLinks').classList.toggle('open'); }
