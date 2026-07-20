@@ -310,13 +310,7 @@
 <!-- ANA SƏHİFƏ / HERO -->
 <section id="home">
   <div class="hero">
-    <div class="slides" id="slides">
-      <div class="slide s1 on"></div>
-      <div class="slide s2"></div>
-      <div class="slide s3"></div>
-      <div class="slide s4"></div>
-      <div class="slide s5"></div>
-    </div>
+    <div class="slides" id="slides"></div>
     <div class="hero-veil"></div>
     <div class="hero-in">
       <div class="kick">Oğuz · Azərbaycan</div>
@@ -682,24 +676,42 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
   });
 });
 
-/* ================= СЛАЙДЕР ================= */
-const slideEls = document.querySelectorAll('.slide');
+/* ================= СЛАЙДЕР (авто, до 10 фото) ================= */
+const slidesBox = document.getElementById('slides');
 const dotsBox = document.getElementById('dots');
-let slideIdx = 0, slideTimer;
-slideEls.forEach((s,i)=>{
-  s.style.backgroundImage = `url('slider/slider-${i+1}.jpg')`; // ← фото из папки slider
-  const d = document.createElement('i'); if(i===0) d.className='on'; d.onclick=()=>goSlide(i); dotsBox.appendChild(d);
-});
+const MAX_SLIDES = 10;
+let slideEls = [], slideIdx = 0, slideTimer;
 function showSlide(i){
   slideEls.forEach((s,n)=>s.classList.toggle('on', n===i));
   dotsBox.querySelectorAll('i').forEach((d,n)=>d.classList.toggle('on', n===i));
   slideIdx = i;
 }
-function nextSlide(){ showSlide((slideIdx+1)%slideEls.length); resetTimer(); }
-function prevSlide(){ showSlide((slideIdx-1+slideEls.length)%slideEls.length); resetTimer(); }
+function nextSlide(){ if(slideEls.length<2) return; showSlide((slideIdx+1)%slideEls.length); resetTimer(); }
+function prevSlide(){ if(slideEls.length<2) return; showSlide((slideIdx-1+slideEls.length)%slideEls.length); resetTimer(); }
 function goSlide(i){ showSlide(i); resetTimer(); }
-function resetTimer(){ clearInterval(slideTimer); slideTimer = setInterval(()=>showSlide((slideIdx+1)%slideEls.length), 3000); }
-resetTimer();
+function resetTimer(){ clearInterval(slideTimer); if(slideEls.length>1) slideTimer = setInterval(()=>showSlide((slideIdx+1)%slideEls.length), 3000); }
+(function buildSlider(){
+  let n = 1;
+  function addSlide(src){
+    const s=document.createElement('div'); s.className='slide'; s.style.backgroundImage=`url('${src}')`;
+    if(!slideEls.length) s.classList.add('on');
+    slidesBox.appendChild(s); const idx=slideEls.length; slideEls.push(s);
+    const d=document.createElement('i'); if(!idx) d.className='on'; d.onclick=()=>goSlide(idx); dotsBox.appendChild(d);
+  }
+  function finalize(){
+    if(!slideEls.length){ const s=document.createElement('div'); s.className='slide s1 on'; slidesBox.appendChild(s); slideEls.push(s); }
+    if(slideEls.length<2){ document.querySelectorAll('.hero-arrow').forEach(a=>a.style.display='none'); dotsBox.style.display='none'; }
+    else resetTimer();
+  }
+  function tryNext(){
+    if(n>MAX_SLIDES){ finalize(); return; }
+    const img=new Image();
+    img.onload=()=>{ addSlide(img.src); n++; tryNext(); };
+    img.onerror=finalize;
+    img.src=`slider/slider-${n}.jpg`; // ← фото из папки slider (по порядку 1,2,3…)
+  }
+  tryNext();
+})();
 
 /* ================= ФОТОГАЛЕРЕЯ ================= */
 (function loadGallery(){
