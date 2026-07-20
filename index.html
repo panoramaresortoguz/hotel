@@ -733,7 +733,29 @@ document.addEventListener('click', () => { const m=document.getElementById('rout
 /* ================= МЕНЮ (моб) ================= */
 function toggleMenu(){ document.getElementById('navLinks').classList.toggle('open'); }
 function closeMenu(){ document.getElementById('navLinks').classList.remove('open'); }
-function galScroll(dir){ document.getElementById('galGrid').scrollBy({left:dir*280,behavior:'smooth'}); }
+function galScroll(dir){ document.getElementById('galGrid').scrollBy({left:dir*280,behavior:'smooth'}); resetGalTimer(); }
+let galTimer;
+function galAutoStep(){
+  const grid = document.getElementById('galGrid');
+  if(!grid || !grid.children.length) return;
+  const atEnd = grid.scrollLeft + grid.clientWidth >= grid.scrollWidth - 5;
+  if(atEnd){ grid.scrollTo({left:0, behavior:'smooth'}); }
+  else{ grid.scrollBy({left:280, behavior:'smooth'}); }
+}
+function resetGalTimer(){
+  clearInterval(galTimer);
+  galTimer = setInterval(galAutoStep, 3000);
+}
+function pauseGalTimer(){ clearInterval(galTimer); }
+(function wireGalAutoplay(){
+  const grid = document.getElementById('galGrid');
+  if(!grid) return;
+  grid.addEventListener('mouseenter', pauseGalTimer);
+  grid.addEventListener('mouseleave', resetGalTimer);
+  grid.addEventListener('touchstart', pauseGalTimer, {passive:true});
+  grid.addEventListener('touchend', resetGalTimer, {passive:true});
+  resetGalTimer();
+})();
 
 /* плавная прокрутка по якорям с учётом высоты шапки */
 document.querySelectorAll('a[href^="#"]').forEach(a=>{
