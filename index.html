@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<title>Panorama Resort Oğuz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ivory:#F6F2E9; --ivory-2:#EFE8D8; --paper:#FBF8F1;
+    --pine:#1C3428; --pine-2:#2C4A3B; --brass:#B4894E; --brass-light:#CBA96C;
+    --ink:#232620; --muted:#6E7165; --line:rgba(28,52,40,.13);
+    --green-soft:#DCE8DC; --green-tx:#2C4A3B; --sand-soft:#EFE3CE; --sand-tx:#8a6f3a;
+    --wrap:1120px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--ivory);color:var(--ink);-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:600;line-height:1.08}
+  a{color:inherit;text-decoration:none}
+  img{display:block;max-width:100%}
+  .wrap{max-width:var(--wrap);margin:0 auto;padding:0 24px}
+  .eyebrow{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--brass);font-weight:700}
+
+  /* ХЕДЕР / НАВИГАЦИЯ */
+  header{position:sticky;top:0;z-index:60;background:rgba(251,248,241,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:64px;gap:16px}
+  .brand{font-family:'Fraunces',serif;font-size:20px;font-weight:600;letter-spacing:.06em;color:var(--pine);white-space:nowrap}
+  .brand b{color:var(--brass)}
+  .nav-links{display:flex;gap:22px;align-items:center}
+  .nav-links a{font-size:13.5px;color:var(--ink);opacity:.82;transition:opacity .15s;white-space:nowrap}
+  .nav-links a:hover{opacity:1;color:var(--brass)}
+  .nav-right{display:flex;align-items:center;gap:12px}
+  .lang{display:flex;border:1px solid var(--line);border-radius:100px;overflow:hidden}
+  .lang-btn{border:none;background:none;font-family:inherit;font-size:12px;font-weight:600;padding:6px 10px;color:var(--muted);cursor:pointer;transition:.15s}
+  .lang-btn.on{background:var(--pine);color:var(--ivory)}
+  .menu-btn{display:none;background:none;border:1px solid var(--line);border-radius:9px;width:40px;height:38px;cursor:pointer;align-items:center;justify-content:center}
+  .menu-btn svg{width:20px;height:20px;color:var(--pine)}
+
+  /* HERO / СЛАЙДЕР */
+  .hero{position:relative;height:78vh;min-height:480px;overflow:hidden;background:var(--pine)}
+  .slides{position:absolute;inset:0}
+  .slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity .9s ease;transform:scale(1.04)}
+  .slide.on{opacity:1;transform:scale(1)}
+  .s1{background:linear-gradient(135deg,#2C4A3B,#1C3428)}
+  .s2{background:linear-gradient(135deg,#5E7360,#38513f)}
+  .s3{background:linear-gradient(135deg,#9C7C45,#6d5427)}
+  .s4{background:linear-gradient(135deg,#4F5F73,#2f3b4a)}
+  .s5{background:linear-gradient(135deg,#7C8CA0,#40566b)}
+  .hero-veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,30,25,.28),rgba(20,30,25,.55))}
+  .hero-in{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;color:#fff;padding:0 22px}
+  .hero-in .kick{font-size:12px;letter-spacing:.34em;text-transform:uppercase;color:var(--brass-light);font-weight:700;margin-bottom:14px}
+  .hero-in h1{font-size:clamp(38px,6.4vw,72px);font-weight:500;letter-spacing:.01em;text-shadow:0 2px 24px rgba(0,0,0,.35)}
+  .hero-in h1 b{font-weight:600}
+  .hero-in p{font-size:clamp(15px,2.2vw,19px);margin-top:16px;max-width:540px;color:rgba(255,255,255,.92);font-family:'Fraunces',serif;font-style:italic}
+  .hero-cta{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:30px}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:inherit;font-size:14.5px;font-weight:600;padding:13px 26px;border-radius:100px;cursor:pointer;border:none;transition:transform .15s,opacity .15s,background .15s}
+  .btn:hover{transform:translateY(-1px)}
+  .btn-brass{background:var(--brass);color:#fff}
+  .btn-brass:hover{background:var(--brass-light)}
+  .btn-ghost{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.5)}
+  .btn-pine{background:var(--pine);color:var(--ivory)}
+  .btn-pine:hover{background:var(--pine-2)}
+  .hero-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.4);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
+  .hero-arrow:hover{background:rgba(255,255,255,.3)}
+  .hero-arrow.prev{left:18px}.hero-arrow.next{right:18px}
+  .hero-arrow svg{width:22px;height:22px}
+  .hero-dots{position:absolute;bottom:22px;left:0;right:0;z-index:3;display:flex;gap:9px;justify-content:center}
+  .hero-dots i{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.45);cursor:pointer;transition:.15s}
+  .hero-dots i.on{background:#fff;width:26px;border-radius:100px}
+
+  /* СЕКЦИИ */
+  section{scroll-margin-top:66px}
+  .sec{padding:44px 0}
+  .sec.alt{background:var(--paper)}
+  .sec.dark{background:var(--pine);color:var(--ivory)}
+  .sec-head{max-width:640px;margin-bottom:34px}
+  .sec-head.center{margin-left:auto;margin-right:auto;text-align:center}
+  .sec-head h2{font-size:clamp(28px,4vw,40px);color:var(--pine);margin:12px 0 10px}
+  .sec.dark .sec-head h2{color:var(--ivory)}
+  .sec-head p{color:var(--muted);font-size:16px;line-height:1.6}
+  .sec.dark .sec-head p{color:rgba(246,242,233,.8)}
+
+  /* ВСТУПЛЕНИЕ */
+  .intro{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+  .intro .stat-row{display:flex;gap:28px;margin-top:22px;flex-wrap:wrap}
+  .stat b{font-family:'Fraunces',serif;font-size:30px;color:var(--brass);display:block}
+  .stat span{font-size:13px;color:var(--muted)}
+  .intro-card{height:320px;border-radius:18px;background:linear-gradient(135deg,#5E7360,#2C4A3B);box-shadow:0 30px 60px -30px rgba(28,52,40,.5)}
+
+  /* ФИЛЬТР + КАРТОЧКИ (номера) */
+  .filter{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:22px}
+  .filter .q{font-size:13px;color:var(--muted);margin-bottom:11px;font-weight:600}
+  .gbtns{display:flex;flex-wrap:wrap;gap:8px}
+  .gbtn{padding:9px 16px;border:1px solid var(--line);border-radius:100px;background:var(--ivory);cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;color:var(--pine);transition:.15s}
+  .gbtn:hover{background:var(--ivory-2)}
+  .gbtn.on{background:var(--pine);color:var(--ivory);border-color:var(--pine)}
+
+  .subsec{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--brass);font-weight:700;margin:26px 0 14px}
+  .room-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .kotec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .kotec,.room{background:#fff;border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column}
+  .room{padding:16px 18px;gap:9px}
+  .kotec{overflow:hidden}
+  .kotec.feature{border-color:var(--brass);box-shadow:0 0 0 1px var(--brass)}
+  .kotec-top{padding:15px 18px;border-bottom:1px solid var(--line)}
+  .kotec-top .no{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--brass);font-weight:700}
+  .kotec-top h3{font-size:19px;color:var(--pine);margin:3px 0 6px}
+  .cap-chip{display:inline-block;font-size:11.5px;background:var(--ivory-2);color:var(--pine);padding:3px 10px;border-radius:100px;font-weight:500}
+  .k-beds{font-size:12px;color:var(--muted);font-style:italic;margin-top:8px}
+  .k-perks{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;padding-top:10px;border-top:1px dashed var(--line)}
+  .perk{font-size:11.5px;background:rgba(180,137,78,.15);color:#8a6a34;padding:3px 10px;border-radius:100px;font-weight:600}
+  .kotec-body{padding:15px 18px;display:flex;flex-direction:column;gap:8px;flex-grow:1}
+  .ladder{display:flex;flex-direction:column;gap:6px}
+  .ladder .lr{display:flex;justify-content:space-between;font-size:14px}
+  .ladder .lr span{color:var(--muted)}
+  .ladder .lr b{font-family:'Fraunces',serif;font-weight:600;color:var(--ink)}
+  .ladder .extra{margin-top:2px;padding-top:8px;border-top:1px dashed var(--line);font-size:12.5px;color:var(--muted)}
+  .ladder .extra b{color:var(--brass)}
+  .pp{display:flex;justify-content:space-between;align-items:center;font-size:13.5px}
+  .pp span{color:var(--muted)}
+  .pp b{font-family:'Fraunces',serif;font-size:18px;font-weight:600;color:var(--ink)}
+  .pp.wknd b{color:var(--brass)}
+  .r-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .r-head h3{font-size:17px;color:var(--pine);line-height:1.15}
+  .bdg{font-size:11px;font-weight:600;padding:3px 9px;border-radius:100px;white-space:nowrap;flex-shrink:0}
+  .b-yes{background:var(--green-soft);color:var(--green-tx)}
+  .b-no{background:var(--sand-soft);color:var(--sand-tx)}
+  .r-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  .r-nums{font-size:13.5px;color:var(--ink)} .r-nums b{font-weight:600}
+  .chip{font-size:11.5px;background:var(--ivory-2);color:var(--pine);padding:2px 9px;border-radius:100px}
+  .r-note{font-size:12px;color:var(--muted);font-style:italic}
+  .r-prices{margin-top:1px;padding-top:9px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:5px}
+  .tier .tier-lbl{font-size:12px;font-weight:600;color:var(--pine);margin-bottom:2px}
+  .kotec-note{background:rgba(180,137,78,.08);border:1.5px dashed var(--brass);border-radius:14px;padding:26px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:10px}
+  .kotec-note .kn-label{font-size:14px;letter-spacing:.22em;text-transform:uppercase;color:var(--brass);font-weight:800}
+  .kotec-note p{font-size:15.5px;color:var(--ink);line-height:1.6}
+  .kotec-note b{color:var(--brass);font-weight:700}
+  .shot-btn{margin-top:12px;align-self:flex-start;display:inline-flex;align-items:center;gap:7px;background:var(--ivory-2);color:var(--pine);border:none;border-radius:100px;padding:7px 14px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s}
+  .shot-btn:hover{background:#e5dcc7}
+  .shot-btn svg{width:15px;height:15px;color:var(--brass)}
+
+  /* ГАЛЕРЕЯ — горизонтальный слайдер */
+  .gal-carousel{position:relative}
+  .gal-track{display:flex;gap:10px;overflow-x:auto;scroll-behavior:smooth;padding:4px 2px;scroll-snap-type:x mandatory;-ms-overflow-style:none;scrollbar-width:none}
+  .gal-track::-webkit-scrollbar{display:none}
+  .gal-track .gph{position:relative;flex:0 0 auto;width:260px;height:260px;border-radius:12px;overflow:hidden;cursor:zoom-in;scroll-snap-align:start;background:var(--ivory-2)}
+  .gal-track .gph img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
+  .gal-track .gph:hover img{transform:scale(1.05)}
+  .gc-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:4;width:44px;height:44px;border-radius:50%;background:#fff;border:1px solid var(--line);color:var(--pine);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px -6px rgba(28,52,40,.45)}
+  .gc-arrow:hover{background:var(--ivory-2)}
+  .gc-arrow.prev{left:-10px}.gc-arrow.next{right:-10px}
+  .gc-arrow svg{width:22px;height:22px}
+  .gal-empty{color:var(--muted);font-size:15px;text-align:center;padding:30px;border:1.5px dashed var(--line);border-radius:14px}
+
+  /* УСЛУГИ */
+  .svc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .svc{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px 20px;text-align:center}
+  .svc .ic{width:52px;height:52px;margin:0 auto 12px;border-radius:14px;background:var(--ivory-2);display:flex;align-items:center;justify-content:center}
+  .svc .ic svg{width:26px;height:26px;color:var(--brass)}
+  .svc h3{font-size:17px;color:var(--pine);margin-bottom:4px}
+  .svc p{font-size:12.5px;color:var(--muted)}
+  .notes-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:22px}
+  .note-pill{font-size:13px;background:#fff;border:1px solid var(--line);padding:8px 16px;border-radius:100px;color:var(--ink)}
+  .note-pill b{color:var(--brass)} .note-pill.free b{color:#3f8a52}
+
+  /* РЕСТОРАН */
+  .rest{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:center}
+  .rest-card{height:280px;border-radius:18px;background:linear-gradient(135deg,#9C7C45,#5b4626);box-shadow:0 30px 60px -30px rgba(28,52,40,.5)}
+
+  /* КАМПАНИИ / БОНУС */
+  .bonus-banner{display:flex;align-items:center;gap:18px;cursor:pointer;outline:none;user-select:none;-webkit-tap-highlight-color:transparent;
+    background:linear-gradient(120deg,#345741 0%,#1C3428 55%,#12241B 100%);color:#fff;border-radius:16px;
+    padding:22px 28px;box-shadow:0 18px 40px -18px rgba(20,38,29,.75);transition:transform .15s;position:relative;overflow:hidden}
+  .endirim{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.16em;background:var(--brass);color:#fff;padding:3px 10px;border-radius:100px;margin-bottom:6px}
+  .bonus-banner:hover{transform:translateY(-2px)}
+  .bb-icon{width:50px;height:50px;flex-shrink:0;border-radius:13px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;z-index:1}
+  .bb-icon svg{width:26px;height:26px;color:#fff}
+  .bb-text{flex:1;z-index:1}
+  .bb-text .t{font-family:'Fraunces',serif;font-size:21px;font-weight:600}
+  .bb-text .s{font-size:13.5px;opacity:.95;margin-top:2px}
+  .bb-text .bb-s2{font-size:12px;opacity:.72;margin-top:1px}
+  .bb-pct{font-family:'Fraunces',serif;font-size:34px;font-weight:600;color:var(--brass-light);z-index:1;white-space:nowrap}
+
+  /* МЕСТА РЯДОМ */
+  .places-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .place{border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#fff}
+  .place .ph{height:150px;background:linear-gradient(135deg,#5E7360,#2C4A3B)}
+  .place.p2 .ph{background:linear-gradient(135deg,#8FA087,#5E7360)}
+  .place.p3 .ph{background:linear-gradient(135deg,#9C7C45,#6d5427)}
+  .place .b{padding:16px 18px}
+  .place h3{font-size:17px;color:var(--pine);margin-bottom:4px}
+  .place p{font-size:13px;color:var(--muted)}
+
+  /* РЕЗЕРВАЦИЯ */
+  .resv{max-width:620px;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:18px;padding:28px;box-shadow:0 24px 50px -34px rgba(28,52,40,.5)}
+  .resv-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:6px;font-weight:500}
+  .field input,.field select{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-family:inherit;font-size:15px;background:var(--ivory);color:var(--ink)}
+  .field input:focus,.field select:focus{outline:2px solid var(--brass);border-color:transparent}
+  .resv .btn-wa{width:100%;justify-content:center;background:#25D366;color:#fff;padding:15px;font-size:15.5px;margin-top:6px}
+  .resv .btn-wa:hover{background:#20bd5a}
+  .resv-summary{background:var(--ivory-2);border:1px solid var(--line);border-radius:12px;padding:14px 16px;text-align:center;font-size:15px;color:var(--muted);margin-bottom:12px}
+  .resv-summary.ready{background:var(--pine);color:var(--ivory);border-color:var(--pine)}
+  .resv-summary b{font-family:'Fraunces',serif;font-size:18px;color:var(--brass)}
+  .resv-summary.ready b{color:var(--brass-light)}
+  .resv-bednote{font-size:12.5px;color:var(--sand-tx);background:var(--sand-soft);border-radius:10px;padding:9px 14px;text-align:center;margin-bottom:12px}
+  .resv-note{font-size:12px;color:var(--muted);text-align:center;margin-top:12px}
+
+  /* КОНТАКТЫ */
+  .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:34px}
+  .c-list{display:flex;flex-direction:column;gap:16px}
+  .c-item{display:flex;gap:14px;align-items:flex-start}
+  .c-item .ic{width:42px;height:42px;flex-shrink:0;border-radius:11px;background:var(--ivory-2);display:flex;align-items:center;justify-content:center}
+  .c-item .ic svg{width:20px;height:20px;color:var(--brass)}
+  .c-item .lbl{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .c-item .val{font-size:16px;color:var(--ink);font-weight:600;margin-top:2px}
+  .c-item .val a{color:var(--ink)}
+  .c-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+  .c-links a{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;padding:7px 13px;border-radius:100px;color:#fff}
+  .c-links a svg{width:15px;height:15px}
+  .l-wa{background:#25D366}.l-ig{background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF)}.l-tt{background:#111}.l-call{background:var(--pine)}
+  .map-card{border-radius:16px;overflow:hidden;border:1px solid var(--line);min-height:300px;display:flex;flex-direction:column}
+  .map-vis{flex:1;min-height:210px;background:linear-gradient(135deg,#5E7360,#2C4A3B);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.8);font-size:14px;text-align:center;padding:20px}
+  .map-actions{display:flex;gap:10px;padding:14px;background:#fff;flex-wrap:wrap}
+  .map-actions a{flex:1;text-align:center;justify-content:center}
+
+  /* ПОДВАЛ */
+  footer.foot{background:var(--pine);color:rgba(246,242,233,.72);padding:40px 0 28px;font-size:13.5px}
+  .foot-top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:24px;margin-bottom:26px}
+  .foot-brand{font-family:'Fraunces',serif;font-size:22px;color:var(--ivory);letter-spacing:.06em}
+  .foot-brand b{color:var(--brass-light)}
+  .foot-links{display:flex;flex-wrap:wrap;gap:16px}
+  .foot-links a{color:rgba(246,242,233,.72)}.foot-links a:hover{color:var(--ivory)}
+  .foot-bottom{border-top:1px solid rgba(246,242,233,.16);padding-top:18px;font-size:12.5px;color:rgba(246,242,233,.5)}
+
+  /* МОДАЛКИ */
+  .modal{position:fixed;inset:0;background:rgba(28,52,40,.6);display:none;align-items:center;justify-content:center;padding:20px;z-index:120}
+  .modal.open{display:flex}
+  .modal-card{background:var(--paper);border-radius:18px;max-width:660px;width:100%;padding:28px;position:relative;box-shadow:0 30px 70px -20px rgba(0,0,0,.5);max-height:90vh;overflow:auto}
+  .m-close{position:absolute;top:12px;right:16px;background:none;border:none;font-size:28px;color:var(--muted);cursor:pointer;line-height:1}
+  .m-badge{display:inline-block;background:linear-gradient(135deg,#CBA96C,#B4894E);color:#fff;font-size:12.5px;font-weight:700;padding:5px 13px;border-radius:100px;margin-bottom:14px}
+  .modal-card h3{font-size:23px;color:var(--pine);margin-bottom:12px}
+  .modal-card p{font-size:15px;color:var(--ink);line-height:1.65;margin-bottom:12px}
+  .m-example{background:var(--ivory-2);border-radius:12px;padding:16px;font-size:14.5px;line-height:1.6}
+  .m-example b{color:var(--brass);font-weight:700}
+  .m-cond{font-size:13px;color:var(--muted)}
+  .g-head{margin-bottom:14px;padding-right:30px}
+  .g-head h3{margin-bottom:2px} .g-sub{font-size:13.5px;color:var(--muted)} .g-sub b{color:var(--ink)}
+  .g-grid{display:flex;flex-wrap:wrap;gap:10px}
+  .g-grid .gph{position:relative;border-radius:10px;overflow:hidden;line-height:0;cursor:zoom-in}
+  .g-grid .gph img{height:180px;width:auto;max-width:100%;object-fit:cover}
+  .g-grid .gph .cap{position:absolute;top:8px;left:8px;background:rgba(28,52,40,.78);color:#fff;font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:100px}
+  .g-empty{text-align:center;color:var(--muted);font-size:14px;padding:24px}
+  .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;padding:24px;z-index:200;cursor:zoom-out}
+  .lightbox.open{display:flex}
+  .lightbox img{max-width:100%;max-height:92vh;border-radius:10px}
+  .lb-close{position:absolute;top:14px;right:20px;background:none;border:none;color:#fff;font-size:34px;cursor:pointer;line-height:1}
+
+  @media(max-width:920px){
+    .intro,.rest,.contact-grid{grid-template-columns:1fr}
+    .room-grid,.kotec-grid,.svc-grid,.gal-grid,.places-grid{grid-template-columns:1fr 1fr}
+  }
+  @media(max-width:720px){
+    .nav-links{position:absolute;top:64px;left:0;right:0;background:var(--paper);border-bottom:1px solid var(--line);flex-direction:column;align-items:flex-start;gap:0;padding:8px 24px;display:none;box-shadow:0 20px 30px -20px rgba(0,0,0,.3)}
+    .nav-links.open{display:flex}
+    .nav-links a{padding:11px 0;width:100%;border-bottom:1px solid var(--line);font-size:15px}
+    .menu-btn{display:flex}
+    .brand{font-size:17px}
+    .room-grid,.kotec-grid,.svc-grid,.places-grid{grid-template-columns:1fr}
+    .gal-track .gph{width:70vw;height:70vw;max-width:280px;max-height:280px}
+    .resv-row{grid-template-columns:1fr}
+    .hero{height:70vh}
+  }
+</style>
+</head>
+<body>
+
+<!-- ХЕДЕР -->
+<header>
+  <div class="wrap nav">
+    <div class="brand">PANORAMA <b>RESORT OĞUZ</b></div>
+    <nav class="nav-links" id="navLinks">
+      <a href="#home" data-i18n="nav_home" onclick="closeMenu()">Ana səhifə</a>
+      <a href="#campaigns" data-i18n="nav_campaigns" onclick="closeMenu()">Kampaniyalar</a>
+      <a href="#rooms" data-i18n="nav_rooms" onclick="closeMenu()">Otaqlar</a>
+      <a href="#gallery" data-i18n="nav_gallery" onclick="closeMenu()">Fotoqalereya</a>
+      <a href="#services" data-i18n="nav_services" onclick="closeMenu()">Xidmətlər</a>
+      <a href="#restaurant" data-i18n="nav_restaurant" onclick="closeMenu()">Restoran</a>
+      <a href="#reservation" data-i18n="nav_reservation" onclick="closeMenu()">Rezervasiya</a>
+      <a href="#contact" data-i18n="nav_contact" onclick="closeMenu()">Əlaqə</a>
+    </nav>
+    <div class="nav-right">
+      <div class="lang">
+        <button class="lang-btn on" data-l="az" onclick="applyLang('az')">AZ</button>
+        <button class="lang-btn" data-l="ru" onclick="applyLang('ru')">RU</button>
+        <button class="lang-btn" data-l="en" onclick="applyLang('en')">EN</button>
+      </div>
+      <button class="menu-btn" onclick="toggleMenu()" aria-label="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ANA SƏHİFƏ / HERO -->
+<section id="home">
+  <div class="hero">
+    <div class="slides" id="slides">
+      <div class="slide s1 on"></div>
+      <div class="slide s2"></div>
+      <div class="slide s3"></div>
+      <div class="slide s4"></div>
+      <div class="slide s5"></div>
+    </div>
+    <div class="hero-veil"></div>
+    <div class="hero-in">
+      <div class="kick">Oğuz · Azərbaycan</div>
+      <h1>Panorama <b>Resort Oğuz</b></h1>
+      <p data-i18n="hero_tag">Təbiətin qoynunda rahatlıq və kef</p>
+      <div class="hero-cta">
+        <a href="#rooms" class="btn btn-brass" data-i18n="hero_cta1">Otaqlara bax</a>
+        <a href="#reservation" class="btn btn-ghost" data-i18n="hero_cta2">Rezervasiya et</a>
+      </div>
+    </div>
+    <button class="hero-arrow prev" onclick="prevSlide()" aria-label="Prev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <button class="hero-arrow next" onclick="nextSlide()" aria-label="Next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+    <div class="hero-dots" id="dots"></div>
+  </div>
+</section>
+
+<!-- ВСТУПЛЕНИЕ -->
+<div class="sec">
+  <div class="wrap intro">
+    <div>
+      <span class="eyebrow" data-i18n="intro_ey">Xoş gəlmisiniz</span>
+      <div class="sec-head" style="margin-bottom:0">
+        <h2 data-i18n="intro_title">Dağların qoynunda istirahət</h2>
+        <p data-i18n="intro_text">Oğuzun təmiz havası, açıq hovuz, ləziz mətbəx və hər axşam canlı musiqi — ailəvi və dostyana istirahət üçün ideal məkan.</p>
+      </div>
+      <div class="stat-row">
+        <div class="stat"><b>10</b><span data-i18n="stat_rooms">otaq növü</span></div>
+        <div class="stat"><b>3</b><span data-i18n="stat_kotec">kotec</span></div>
+        <div class="stat"><b>24/7</b><span data-i18n="stat_service">xidmət</span></div>
+      </div>
+    </div>
+    <div class="intro-card"></div>
+  </div>
+</div>
+
+<!-- KAMPANİYALAR -->
+<section id="campaigns" class="sec">
+  <div class="wrap">
+    <div class="sec-head center">
+      <span class="eyebrow" data-i18n="camp_ey">Xüsusi təkliflər</span>
+      <h2 data-i18n="camp_title">Kampaniyalar</h2>
+    </div>
+    <div class="bonus-banner" onclick="openBonus()">
+      <div class="bb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/><path d="M6.5 15H11"/></svg></div>
+      <div class="bb-text">
+        <span class="endirim" data-i18n="endirim">ENDİRİM</span>
+        <div class="t" data-i18n="bonus_t">Bonus Kartı</div>
+        <div class="s" data-i18n="bonus_s">Hər ödənişdən 10% bonus qazan</div>
+        <div class="bb-s2" data-i18n="bonus_s2">Şərtlər üçün toxun</div>
+      </div>
+      <div class="bb-pct">-10%</div>
+    </div>
+  </div>
+</section>
+
+<!-- OTAQLAR -->
+<section id="rooms" class="sec alt">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow" data-i18n="rooms_ey">Yerləşmə</span>
+      <h2 data-i18n="rooms_title">Otaqlar və qiymətlər</h2>
+    </div>
+    <div class="filter">
+      <div class="q" data-i18n="rooms_filter">Adam sayını seç</div>
+      <div class="gbtns" id="gbtns">
+        <button class="gbtn on" data-g="all" onclick="setGuests(this)">Hamısı</button>
+        <button class="gbtn" data-g="2" onclick="setGuests(this)">2</button>
+        <button class="gbtn" data-g="3" onclick="setGuests(this)">3</button>
+        <button class="gbtn" data-g="4" onclick="setGuests(this)">4</button>
+        <button class="gbtn" data-g="5" onclick="setGuests(this)">5</button>
+        <button class="gbtn" data-g="6" onclick="setGuests(this)">6</button>
+        <button class="gbtn" data-g="8" onclick="setGuests(this)">8</button>
+        <button class="gbtn" data-g="10" onclick="setGuests(this)">10</button>
+      </div>
+    </div>
+    <div id="roomSection">
+      <div class="subsec">Otaqlar</div>
+      <div class="room-grid" id="roomResults"></div>
+    </div>
+    <div id="kotecSection">
+      <div class="subsec">Koteclər</div>
+      <div class="kotec-grid" id="kotecResults"></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOTOQALEREYA -->
+<section id="gallery" class="sec">
+  <div class="wrap">
+    <div class="sec-head center">
+      <span class="eyebrow" data-i18n="gallery_ey">Fotolar</span>
+      <h2 data-i18n="gallery_title">Fotoqalereya</h2>
+      <p data-i18n="gallery_hint">Resortun və otaqların fotoları.</p>
+    </div>
+    <div class="gal-carousel">
+      <button class="gc-arrow prev" onclick="galScroll(-1)" aria-label="Prev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <div class="gal-track" id="galGrid"></div>
+      <button class="gc-arrow next" onclick="galScroll(1)" aria-label="Next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+    </div>
+    <div class="gal-empty" id="galEmpty" data-i18n="gallery_empty">Şəkillər tezliklə əlavə olunacaq.</div>
+  </div>
+</section>
+
+<!-- XİDMƏTLƏR -->
+<section id="services" class="sec">
+  <div class="wrap">
+    <div class="sec-head center">
+      <span class="eyebrow" data-i18n="services_ey">Qiymətə daxildir</span>
+      <h2 data-i18n="services_title">Xidmətlər</h2>
+    </div>
+    <div class="svc-grid">
+      <div class="svc">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 19h16"/><path d="M6 19V9a6 6 0 0112 0v10"/><path d="M9 6c0-1 .5-2 3-3"/></svg></div>
+        <h3 data-i18n="svc_breakfast">Səhər yeməyi</h3>
+        <p data-i18n="svc_breakfast_s">Şved stolu · 09:00–11:00</p>
+      </div>
+      <div class="svc">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 15c2 0 2 1.5 4 1.5S8 15 10 15s2 1.5 4 1.5S16 15 18 15s2 1.5 4 1.5"/><path d="M2 19c2 0 2 1.5 4 1.5S8 19 10 19s2 1.5 4 1.5S16 19 18 19s2 1.5 4 1.5"/><path d="M8 13V5a2 2 0 014 0"/></svg></div>
+        <h3 data-i18n="svc_pool">Açıq hovuz</h3>
+        <p data-i18n="svc_pool_s">Yay mövsümü</p>
+      </div>
+      <div class="svc">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/></svg></div>
+        <h3 data-i18n="svc_games">Əyləncəli oyunlar</h3>
+        <p data-i18n="svc_games_s">Bilyard, tennis, stolüstü xokkey, uşaq əyləncəsi</p>
+      </div>
+      <div class="svc">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 18V5l10-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/></svg></div>
+        <h3 data-i18n="svc_music">Canlı musiqi</h3>
+        <p data-i18n="svc_music_s">Hər axşam · 19:00–23:00</p>
+      </div>
+    </div>
+    <div class="notes-row">
+      <span class="note-pill"><span data-i18n="svc_bed">Əlavə çarpayı</span> — <b>30 ₼</b></span>
+      <span class="note-pill free"><span data-i18n="svc_child">0–5 yaş uşaq (1 nəfər)</span> — <b data-i18n="svc_free">pulsuz</b></span>
+    </div>
+  </div>
+</section>
+
+<!-- RESTORAN -->
+<section id="restaurant" class="sec alt">
+  <div class="wrap rest">
+    <div>
+      <span class="eyebrow" data-i18n="rest_ey">Dad və zövq</span>
+      <div class="sec-head" style="margin-bottom:18px">
+        <h2 data-i18n="rest_title">Restoran</h2>
+        <p data-i18n="rest_text">Yerli və milli mətbəxin ən dadlı yeməkləri, təzə məhsullar və xüsusi atmosfer. Menyu ilə onlayn tanış olun.</p>
+      </div>
+      <a href="https://karekodrestaurantmenu.com/menu/15762" target="_blank" rel="noopener" class="btn btn-brass" data-i18n="rest_btn">Restoran menyusu</a>
+    </div>
+    <div class="rest-card"></div>
+  </div>
+</section>
+
+<!-- REZERVASİYA -->
+<section id="reservation" class="sec">
+  <div class="wrap">
+    <div class="sec-head center">
+      <span class="eyebrow" data-i18n="resv_ey">Yer ayırt</span>
+      <h2 data-i18n="resv_title">Rezervasiya</h2>
+    </div>
+    <div class="resv">
+      <div class="resv-row">
+        <div class="field"><label data-i18n="resv_checkin">Giriş tarixi</label><input type="date" id="rvIn" onchange="updateReservation()"></div>
+        <div class="field"><label data-i18n="resv_checkout">Çıxış tarixi</label><input type="date" id="rvOut" onchange="updateReservation()"></div>
+      </div>
+      <div class="resv-row">
+        <div class="field"><label data-i18n="resv_guests">Qonaq sayı</label>
+          <select id="rvGuests" onchange="fillRoomSelect()"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select>
+        </div>
+        <div class="field"><label data-i18n="resv_room">Otaq seçimi</label><select id="rvRoom" onchange="updateReservation()"></select></div>
+      </div>
+      <div class="resv-summary" id="rvSummary">Tarixləri seçin</div>
+      <div class="resv-bednote" id="rvBedNote" style="display:none"></div>
+      <button class="btn btn-wa" onclick="sendReservation()">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.5 1.3 5L2 22l5.1-1.3c1.4.8 3.1 1.2 4.9 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2z"/></svg>
+        <span data-i18n="resv_btn">WhatsApp ilə rezervasiya et</span>
+      </button>
+      <p class="resv-note" data-i18n="resv_note">Düyməyə basdıqda seçdiyiniz məlumatlar WhatsApp-a köçürülür.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ƏLAQƏ -->
+<section id="contact" class="sec alt">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow" data-i18n="contact_ey">Bizimlə əlaqə</span>
+      <h2 data-i18n="contact_title">Əlaqə</h2>
+    </div>
+    <div class="contact-grid">
+      <div class="c-list">
+        <div class="c-item">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5c0 8 7 15 15 15l2-3-4-2-2 2a12 12 0 01-6-6l2-2-2-4z"/></svg></div>
+          <div>
+            <div class="lbl" data-i18n="contact_phone">Telefon</div>
+            <div class="val"><a href="tel:+994702153923">+994 70 215 39 23</a></div>
+            <div class="val"><a href="tel:+994552352299">+994 55 235 22 99</a></div>
+            <div class="c-links">
+              <a class="l-call" href="tel:+994702153923"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 5c0 8 7 15 15 15l2-3-4-2-2 2a12 12 0 01-6-6l2-2-2-4z"/></svg><span data-i18n="contact_call">Zəng et</span></a>
+              <a class="l-wa" href="https://wa.me/994702153923" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.5 1.3 5L2 22l5.1-1.3c1.4.8 3.1 1.2 4.9 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2z"/></svg>WhatsApp</a>
+            </div>
+          </div>
+        </div>
+        <div class="c-item">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"/></svg></div>
+          <div>
+            <div class="lbl">Instagram</div>
+            <div class="c-links" style="margin-top:8px">
+              <a class="l-ig" href="https://www.instagram.com/panoramaresortoguz" target="_blank" rel="noopener">@panoramaresortoguz</a>
+              <a class="l-ig" href="https://www.instagram.com/panoramarestoranoguz" target="_blank" rel="noopener">@panoramarestoranoguz</a>
+            </div>
+          </div>
+        </div>
+        <div class="c-item">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 5.82a4.28 4.28 0 01-1.06-2.82h-3.2v12.9a2.34 2.34 0 01-2.34 2.26 2.34 2.34 0 01-2.16-3.28 2.34 2.34 0 012.9-1.28V10.3a5.54 5.54 0 00-1-.09A5.55 5.55 0 004.2 15.7a5.55 5.55 0 009.55 3.86 5.5 5.5 0 001.6-3.9V9.01a7.5 7.5 0 004.4 1.4V7.2a4.28 4.28 0 01-3.15-1.38z"/></svg></div>
+          <div>
+            <div class="lbl">TikTok</div>
+            <div class="c-links" style="margin-top:8px">
+              <a class="l-tt" href="https://www.tiktok.com/@panoramaresortoghuz" target="_blank" rel="noopener">@panoramaresortoghuz</a>
+            </div>
+          </div>
+        </div>
+        <div class="c-item">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s7-6.5 7-12a7 7 0 10-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
+          <div>
+            <div class="lbl" data-i18n="contact_addr">Ünvan</div>
+            <div class="val" data-i18n="contact_addr_val">Oğuz, Azərbaycan</div>
+          </div>
+        </div>
+      </div>
+      <div class="map-card">
+        <div class="map-vis" data-i18n="map_hint">Xəritədə yerimiz</div>
+        <div class="map-actions">
+          <a class="btn btn-brass" href="https://www.google.com/maps/dir/?api=1&destination=Panorama+Resort+O%C4%9Fuz" target="_blank" rel="noopener" data-i18n="contact_route">Marşrutu aç</a>
+          <a class="btn btn-pine" href="https://www.google.com/maps/search/?api=1&query=Panorama+Resort+O%C4%9Fuz" target="_blank" rel="noopener" data-i18n="contact_maps">Google Maps</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ПОДВАЛ -->
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-brand">PANORAMA <b>RESORT OĞUZ</b></div>
+      <div class="foot-links">
+        <a href="#rooms" data-i18n="nav_rooms">Otaqlar</a>
+        <a href="#gallery" data-i18n="nav_gallery">Fotoqalereya</a>
+        <a href="#restaurant" data-i18n="nav_restaurant">Restoran</a>
+        <a href="#reservation" data-i18n="nav_reservation">Rezervasiya</a>
+        <a href="#contact" data-i18n="nav_contact">Əlaqə</a>
+      </div>
+    </div>
+    <div class="foot-bottom">© 2026 Panorama Resort Oğuz</div>
+  </div>
+</footer>
+
+<!-- МОДАЛКА БОНУС -->
+<div class="modal" id="bonusModal" onclick="if(event.target===this)closeBonus()">
+  <div class="modal-card">
+    <button class="m-close" onclick="closeBonus()">×</button>
+    <span class="m-badge">Bonus Kartı · 10%</span>
+    <h3 data-i18n="bonus_how">Necə işləyir?</h3>
+    <p data-i18n="bonus_text">Oteldə hər ödənişin 10%-i bonus kartınıza qaytarılır. Bonuslar yığılır və kifayət qədər məbləğ toplandıqda onunla növbəti gecələməni ödəyə bilərsiniz.</p>
+    <div class="m-example" data-i18n-html="bonus_ex"><b>Nümunə:</b> Standart otaq (kiçik)-də 3 gecə — <b>300 ₼</b>. Kartınıza <b>30 ₼</b> bonus. <b>100 ₼</b> topladıqda — <b>1 gecə pulsuz!</b></div>
+    <p class="m-cond" style="margin-top:12px" data-i18n="bonus_cond">Şərt: bonusdan istifadə üçün lazımi məbləğ tam yığılmalıdır.</p>
+  </div>
+</div>
+
+<!-- МОДАЛКА ФОТО НОМЕРА -->
+<div class="modal" id="galleryModal" onclick="if(event.target===this)closeGallery()">
+  <div class="modal-card">
+    <button class="m-close" onclick="closeGallery()">×</button>
+    <div class="g-head"><h3 id="galleryTitle"></h3><div class="g-sub" id="gallerySub"></div></div>
+    <div class="g-grid" id="galleryGrid"></div>
+    <div class="g-empty" id="galleryEmpty" data-i18n="gallery_empty">Şəkillər tezliklə əlavə olunacaq.</div>
+  </div>
+</div>
+
+<!-- ЛАЙТБОКС -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lb-close" onclick="closeLightbox()">×</button>
+  <img id="lightboxImg" alt="">
+</div>
+
+<script>
+const CUR = "₼";
+
+/* ================= ПЕРЕВОДЫ ================= */
+const I18N = {
+  az:{
+    nav_home:"Ana səhifə",nav_rooms:"Otaqlar",nav_gallery:"Fotoqalereya",nav_about:"Resort haqqında",nav_services:"Xidmətlər",nav_restaurant:"Restoran",nav_campaigns:"Kampaniyalar",nav_places:"Gəzməli yerlər",nav_reservation:"Rezervasiya",nav_contact:"Əlaqə",
+    hero_tag:"Təbiətin qoynunda rahatlıq və kef",hero_cta1:"Otaqlara bax",hero_cta2:"Rezervasiya et",
+    intro_ey:"Xoş gəlmisiniz",intro_title:"Dağların qoynunda istirahət",intro_text:"Oğuzun təmiz havası, açıq hovuz, ləziz mətbəx və hər axşam canlı musiqi — ailəvi və dostyana istirahət üçün ideal məkan.",
+    stat_rooms:"otaq növü",stat_kotec:"kotec",stat_service:"xidmət",
+    rooms_ey:"Yerləşmə",rooms_title:"Otaqlar və qiymətlər",rooms_filter:"Adam sayını seç",
+    gallery_ey:"Fotolar",gallery_title:"Fotoqalereya",gallery_hint:"Resortun və otaqların fotoları.",gallery_empty:"Şəkillər tezliklə əlavə olunacaq.",
+    about_ey:"Resort haqqında",about_title:"Panorama Resort Oğuz",about_text:"Şəhər səs-küyündən uzaqda, təbiətlə əhatələnmiş rahat resort. Burada açıq hovuz, sauna, əyləncə zonaları və hər zövqə uyğun otaqlar sizi gözləyir.",
+    services_ey:"Qiymətə daxildir",services_title:"Xidmətlər",svc_breakfast:"Səhər yeməyi",svc_breakfast_s:"Şved stolu · 09:00–11:00",svc_pool:"Açıq hovuz",svc_pool_s:"Yay mövsümü",svc_games:"Əyləncəli oyunlar",svc_games_s:"Bilyard, tennis, stolüstü xokkey, uşaq əyləncəsi",svc_music:"Canlı musiqi",svc_music_s:"Hər axşam · 19:00–23:00",svc_bed:"Əlavə çarpayı",svc_child:"0–5 yaş uşaq (1 nəfər)",svc_free:"pulsuz",
+    rest_ey:"Dad və zövq",rest_title:"Restoran",rest_text:"Yerli və milli mətbəxin ən dadlı yeməkləri, təzə məhsullar və xüsusi atmosfer.",rest_btn:"Restoran menyusu",
+    camp_ey:"Xüsusi təkliflər",camp_title:"Kampaniyalar",bonus_t:"Bonus Kartı",bonus_s:"Hər ödənişdən 10% bonus qazan",bonus_s2:"Şərtlər üçün toxun",bonus_how:"Necə işləyir?",bonus_text:"Oteldə hər ödənişin 10%-i bonus kartınıza qaytarılır. Bonuslar yığılır və kifayət qədər məbləğ toplandıqda onunla növbəti gecələməni ödəyə bilərsiniz.",bonus_cond:"Şərt: bonusdan istifadə üçün lazımi məbləğ tam yığılmalıdır.",
+    places_ey:"Ətrafda",places_title:"Oğuzda gəzməli yerlər",place1_t:"Göllər və çaylar",place1_s:"Təbii göllər və sərin çaylar.",place2_t:"Qafqaz meşələri",place2_s:"Piyada gəzintilər və təmiz hava.",place3_t:"Tarixi abidələr",place3_s:"Oğuzun qədim məbədləri.",
+    resv_ey:"Yer ayırt",resv_title:"Rezervasiya",resv_checkin:"Giriş tarixi",resv_checkout:"Çıxış tarixi",resv_guests:"Qonaq sayı",resv_room:"Otaq seçimi",resv_btn:"WhatsApp ilə rezervasiya et",resv_note:"Düyməyə basdıqda seçdiyiniz məlumatlar WhatsApp-a köçürülür.",
+    contact_ey:"Bizimlə əlaqə",contact_title:"Əlaqə",contact_phone:"Telefon",contact_call:"Zəng et",contact_addr:"Ünvan",contact_addr_val:"Oğuz, Azərbaycan",contact_route:"Marşrutu aç",contact_maps:"Google Maps",map_hint:"Xəritədə yerimiz",
+    endirim:"ENDİRİM",resv_pick:"Tarixləri seçin",resv_baddate:"Tarixləri düzgün seçin",gece:"gecə",gun:"gün",total:"Cəmi",resv_bednote:"6+ nəfər üçün kotec-ə əlavə çarpayı (30 ₼) əlavə etmək olar."
+  },
+  ru:{
+    nav_home:"Главная",nav_rooms:"Номера",nav_gallery:"Галерея",nav_about:"Об отеле",nav_services:"Услуги",nav_restaurant:"Ресторан",nav_campaigns:"Акции",nav_places:"Что рядом",nav_reservation:"Бронирование",nav_contact:"Контакты",
+    hero_tag:"Отдых и уют в объятиях природы",hero_cta1:"Смотреть номера",hero_cta2:"Забронировать",
+    intro_ey:"Добро пожаловать",intro_title:"Отдых среди гор",intro_text:"Чистый воздух Огуза, открытый бассейн, вкусная кухня и живая музыка каждый вечер — идеальное место для семейного и дружеского отдыха.",
+    stat_rooms:"типов номеров",stat_kotec:"коттеджа",stat_service:"сервис",
+    rooms_ey:"Размещение",rooms_title:"Номера и цены",rooms_filter:"Выберите число гостей",
+    gallery_ey:"Фото",gallery_title:"Галерея",gallery_hint:"Фотографии отеля и номеров.",gallery_empty:"Фотографии скоро появятся.",
+    about_ey:"Об отеле",about_title:"Panorama Resort Oğuz",about_text:"Уютный отель вдали от городского шума, в окружении природы. Открытый бассейн, сауна, зоны отдыха и номера на любой вкус.",
+    services_ey:"Входит в цену",services_title:"Услуги",svc_breakfast:"Завтрак",svc_breakfast_s:"Шведский стол · 09:00–11:00",svc_pool:"Открытый бассейн",svc_pool_s:"Летний сезон",svc_games:"Игры и развлечения",svc_games_s:"Бильярд, теннис, настольный хоккей, детские развлечения",svc_music:"Живая музыка",svc_music_s:"Каждый вечер · 19:00–23:00",svc_bed:"Доп. кровать",svc_child:"Дети 0–5 лет (1 реб.)",svc_free:"бесплатно",
+    rest_ey:"Вкус и уют",rest_title:"Ресторан",rest_text:"Лучшие блюда местной и национальной кухни, свежие продукты и особая атмосфера.",rest_btn:"Меню ресторана",
+    camp_ey:"Спецпредложения",camp_title:"Акции",bonus_t:"Бонусная карта",bonus_s:"10% бонусов с каждой оплаты",bonus_s2:"Нажмите для условий",bonus_how:"Как это работает?",bonus_text:"10% каждой оплаты возвращается на бонусную карту. Бонусы накапливаются, и когда собрана нужная сумма — ими можно оплатить следующую ночь.",bonus_cond:"Условие: для использования нужная сумма должна быть собрана полностью.",
+    places_ey:"Рядом",places_title:"Что посмотреть в Огузе",place1_t:"Озёра и реки",place1_s:"Природные озёра и прохладные реки.",place2_t:"Кавказские леса",place2_s:"Прогулки и чистый воздух.",place3_t:"Исторические места",place3_s:"Древние памятники Огуза.",
+    resv_ey:"Забронировать",resv_title:"Бронирование",resv_checkin:"Дата заезда",resv_checkout:"Дата выезда",resv_guests:"Число гостей",resv_room:"Выбор номера",resv_btn:"Забронировать через WhatsApp",resv_note:"При нажатии выбранные данные переносятся в WhatsApp.",
+    contact_ey:"Свяжитесь с нами",contact_title:"Контакты",contact_phone:"Телефон",contact_call:"Позвонить",contact_addr:"Адрес",contact_addr_val:"Огуз, Азербайджан",contact_route:"Построить маршрут",contact_maps:"Google Maps",map_hint:"Мы на карте",
+    endirim:"СКИДКА",resv_pick:"Выберите даты",resv_baddate:"Проверьте даты",gece:"ночей",gun:"дней",total:"Итого",resv_bednote:"Для 6+ гостей в коттедж можно добавить доп. кровать (30 ₼)."
+  },
+  en:{
+    nav_home:"Home",nav_rooms:"Rooms",nav_gallery:"Gallery",nav_about:"About",nav_services:"Services",nav_restaurant:"Restaurant",nav_campaigns:"Offers",nav_places:"Nearby",nav_reservation:"Reservation",nav_contact:"Contact",
+    hero_tag:"Comfort and leisure surrounded by nature",hero_cta1:"View rooms",hero_cta2:"Book now",
+    intro_ey:"Welcome",intro_title:"A retreat among the mountains",intro_text:"Oguz's fresh air, an open-air pool, delicious cuisine and live music every evening — the ideal place for family and friends.",
+    stat_rooms:"room types",stat_kotec:"cottages",stat_service:"service",
+    rooms_ey:"Stay",rooms_title:"Rooms & prices",rooms_filter:"Select number of guests",
+    gallery_ey:"Photos",gallery_title:"Gallery",gallery_hint:"Photos of the resort and rooms.",gallery_empty:"Photos coming soon.",
+    about_ey:"About",about_title:"Panorama Resort Oğuz",about_text:"A cozy resort away from the city noise, surrounded by nature. Open-air pool, sauna, leisure areas and rooms for every taste.",
+    services_ey:"Included in price",services_title:"Services",svc_breakfast:"Breakfast",svc_breakfast_s:"Buffet · 09:00–11:00",svc_pool:"Open-air pool",svc_pool_s:"Summer season",svc_games:"Games & fun",svc_games_s:"Billiards, tennis, table hockey, kids' fun",svc_music:"Live music",svc_music_s:"Every evening · 19:00–23:00",svc_bed:"Extra bed",svc_child:"Kids 0–5 (1 child)",svc_free:"free",
+    rest_ey:"Taste & comfort",rest_title:"Restaurant",rest_text:"The finest local and national dishes, fresh produce and a special atmosphere.",rest_btn:"Restaurant menu",
+    camp_ey:"Special offers",camp_title:"Offers",bonus_t:"Bonus Card",bonus_s:"Earn 10% back on every payment",bonus_s2:"Tap for conditions",bonus_how:"How it works",bonus_text:"10% of every payment is returned to your bonus card. Bonuses add up, and once you've collected enough you can pay for your next night with them.",bonus_cond:"Condition: the full amount must be collected to use the bonus.",
+    places_ey:"Around",places_title:"Things to see in Oguz",place1_t:"Lakes & rivers",place1_s:"Natural lakes and cool rivers.",place2_t:"Caucasus forests",place2_s:"Walks and fresh air.",place3_t:"Historic sites",place3_s:"Ancient landmarks of Oguz.",
+    resv_ey:"Reserve",resv_title:"Reservation",resv_checkin:"Check-in",resv_checkout:"Check-out",resv_guests:"Guests",resv_room:"Room",resv_btn:"Book via WhatsApp",resv_note:"On tap, your selection is copied into WhatsApp.",
+    contact_ey:"Get in touch",contact_title:"Contact",contact_phone:"Phone",contact_call:"Call",contact_addr:"Address",contact_addr_val:"Oguz, Azerbaijan",contact_route:"Get directions",contact_maps:"Google Maps",map_hint:"Find us on the map",
+    endirim:"DISCOUNT",resv_pick:"Select dates",resv_baddate:"Check the dates",gece:"nights",gun:"days",total:"Total",resv_bednote:"For 6+ guests an extra bed (30 ₼) can be added in a cottage."
+  }
+};
+let lang = 'az';
+function applyLang(l){
+  lang = l;
+  document.documentElement.lang = l;
+  const dict = I18N[l];
+  document.querySelectorAll('[data-i18n]').forEach(el=>{ const k=el.dataset.i18n; if(dict[k]!=null) el.textContent = dict[k]; });
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('on', b.dataset.l===l));
+  try{ localStorage.setItem('lang', l); }catch(e){}
+  if(typeof updateReservation==='function') updateReservation();
+}
+
+/* ================= МЕНЮ (моб) ================= */
+function toggleMenu(){ document.getElementById('navLinks').classList.toggle('open'); }
+function closeMenu(){ document.getElementById('navLinks').classList.remove('open'); }
+function galScroll(dir){ document.getElementById('galGrid').scrollBy({left:dir*280,behavior:'smooth'}); }
+
+/* ================= СЛАЙДЕР ================= */
+const slideEls = document.querySelectorAll('.slide');
+const dotsBox = document.getElementById('dots');
+let slideIdx = 0, slideTimer;
+slideEls.forEach((s,i)=>{
+  s.style.backgroundImage = `url('slider/slider-${i+1}.jpg')`; // ← фото из папки slider
+  const d = document.createElement('i'); if(i===0) d.className='on'; d.onclick=()=>goSlide(i); dotsBox.appendChild(d);
+});
+function showSlide(i){
+  slideEls.forEach((s,n)=>s.classList.toggle('on', n===i));
+  dotsBox.querySelectorAll('i').forEach((d,n)=>d.classList.toggle('on', n===i));
+  slideIdx = i;
+}
+function nextSlide(){ showSlide((slideIdx+1)%slideEls.length); resetTimer(); }
+function prevSlide(){ showSlide((slideIdx-1+slideEls.length)%slideEls.length); resetTimer(); }
+function goSlide(i){ showSlide(i); resetTimer(); }
+function resetTimer(){ clearInterval(slideTimer); slideTimer = setInterval(()=>showSlide((slideIdx+1)%slideEls.length), 3000); }
+resetTimer();
+
+/* ================= ФОТОГАЛЕРЕЯ ================= */
+(function loadGallery(){
+  const grid = document.getElementById('galGrid');
+  const empty = document.getElementById('galEmpty');
+  for(let i=1;i<=16;i++){
+    const img = new Image();
+    img.src = `qalereya/qalereya-${i}.jpg`; // ← фото из папки qalereya
+    img.onload = () => {
+      const d = document.createElement('div'); d.className='gph'; d.style.order=i;
+      d.onclick = () => openLightbox(img.src);
+      d.appendChild(img); grid.appendChild(d); empty.style.display='none';
+    };
+  }
+})();
+
+/* ================= БОНУС / ЛАЙТБОКС ================= */
+function openBonus(){ document.getElementById('bonusModal').classList.add('open'); }
+function closeBonus(){ document.getElementById('bonusModal').classList.remove('open'); }
+function openLightbox(src){ document.getElementById('lightboxImg').src=src; document.getElementById('lightbox').classList.add('open'); }
+function closeLightbox(){ document.getElementById('lightbox').classList.remove('open'); }
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ if(document.getElementById('lightbox').classList.contains('open')) closeLightbox(); else { closeBonus(); closeGallery(); } } });
+
+/* ================= РЕЗЕРВАЦИЯ ================= */
+function nightlyPrice(item, g, weekend){
+  if(item.ladder){ return item.base + Math.max(0,(g - item.ladder[0][0])) * item.perExtra; }
+  if(item.tiers){ const t = item.tiers.find(t=>g<=t.max) || item.tiers[item.tiers.length-1]; return weekend? t.wknd : t.wkdy; }
+  return weekend? item.wknd : item.wkdy;
+}
+function computeStay(item, g, ci, co){
+  const start=new Date(ci+'T00:00:00'), end=new Date(co+'T00:00:00');
+  if(!(end>start)) return null;
+  let nights=0, total=0, cur=new Date(start);
+  while(cur<end){ const d=cur.getDay(); const weekend=(d===5||d===6||d===0); total+=nightlyPrice(item,g,weekend); nights++; cur.setDate(cur.getDate()+1); }
+  return {nights,total};
+}
+function fillRoomSelect(){
+  const sel=document.getElementById('rvRoom'); const g=parseInt(document.getElementById('rvGuests').value); const prev=sel.value;
+  sel.innerHTML='';
+  [...ROOMS,...KOTECS].filter(x=>g<=x.max).forEach(x=>{ const o=document.createElement('option'); o.value=x.id; o.textContent=x.name+(x.nums?' ('+x.nums+')':''); sel.appendChild(o); });
+  if(!sel.options.length){ const o=document.createElement('option'); o.value=''; o.textContent='—'; sel.appendChild(o); }
+  if([...sel.options].some(o=>o.value===prev)) sel.value=prev;
+  updateReservation();
+}
+function updateReservation(){
+  const dict=I18N[lang];
+  const ci=document.getElementById('rvIn').value, co=document.getElementById('rvOut').value;
+  const g=parseInt(document.getElementById('rvGuests').value);
+  const sel=document.getElementById('rvRoom'); const item=[...ROOMS,...KOTECS].find(x=>x.id===sel.value);
+  const bn=document.getElementById('rvBedNote');
+  if(g>=6){ bn.style.display=''; bn.textContent=dict.resv_bednote; } else { bn.style.display='none'; }
+  const sum=document.getElementById('rvSummary');
+  if(!ci||!co||!item){ sum.textContent=dict.resv_pick; sum.classList.remove('ready'); return; }
+  const st=computeStay(item,g,ci,co);
+  if(!st){ sum.textContent=dict.resv_baddate; sum.classList.remove('ready'); return; }
+  sum.classList.add('ready');
+  sum.innerHTML=`<b>${st.nights}</b> ${dict.gece} · <b>${st.nights+1}</b> ${dict.gun} · ${dict.total}: <b>${st.total} ₼</b>`;
+}
+function sendReservation(){
+  const ci=document.getElementById('rvIn').value||'—', co=document.getElementById('rvOut').value||'—';
+  const g=document.getElementById('rvGuests').value;
+  const sel=document.getElementById('rvRoom'); const roomName=sel.options[sel.selectedIndex]?sel.options[sel.selectedIndex].text:'';
+  const item=[...ROOMS,...KOTECS].find(x=>x.id===sel.value);
+  let extra='';
+  if(ci!=='—'&&co!=='—'&&item){ const st=computeStay(item,parseInt(g),ci,co); if(st){ extra=`%0AGecə: ${st.nights} gecə (${st.nights+1} gün)%0ACəmi: ${st.total} ₼`; } }
+  const msg=`Salam! Rezervasiya etmək istəyirəm.%0AGiriş: ${ci}%0AÇıxış: ${co}%0AQonaq: ${g}%0AOtaq: ${encodeURIComponent(roomName)}${extra}`;
+  window.open(`https://wa.me/994702153923?text=${msg}`,'_blank');
+}
+
+/* ================= ДАННЫЕ НОМЕРОВ ================= */
+const KOTECS = [
+  { id:"kotec3", no:"Kotec 3–8", name:"Kotec", capLabel:"2–5 nəfərlik", min:2, max:5, beds:"1 cüt, 2 tək",
+    tiers:[ {cap:"2 nəfər", min:2, max:2, wkdy:200, wknd:220}, {cap:"3–5 nəfər", min:3, max:5, wkdy:250, wknd:280} ] },
+  { id:"kotec2", no:"Kotec 2", name:"VİP Kotec", capLabel:"2–5 nəfərlik", min:2, max:5, beds:"1 cüt, 2 tək",
+    tiers:[ {cap:"2 nəfər", min:2, max:2, wkdy:250, wknd:280}, {cap:"3–5 nəfər", min:3, max:5, wkdy:300, wknd:350} ] },
+  { id:"kotec1", no:"Kotec 1", name:"VIP Deluxe", capLabel:"2–10 nəfərlik", min:2, max:10, feature:true,
+    beds:"2 cüt + uşaqlar üçün yataq (4 nəfərlik)", perks:["Qapalı hovuz","Sauna","Cakuzi"],
+    ladder:[[2,350],[4,450],[6,550],[8,650]], base:350, perExtra:50, extra:"Əlavə hər nəfər +50 ₼" },
+];
+const ROOMS = [
+  { id:"standart", name:"Standart otaq · kiçik", nums:"24, 25, 26", cap:"2 nəfər", min:2, max:2, balcony:false, note:"1 cüt", wkdy:100, wknd:120 },
+  { id:"luks-genis", name:"Lüks otaq · geniş", nums:"11, 13, 16, 17, 18, 20", cap:"2 nəfər", min:2, max:2, balcony:true, note:"11, 13, 16 — 2 tək · 17, 18, 20 — 1 cüt", wkdy:120, wknd:140 },
+  { id:"Double-21-22", name:"Double otaq", nums:"21, 22", cap:"2 nəfər", min:2, max:2, balcony:false, note:"21 — 1 cüt · 22 — 2 tək", wkdy:120, wknd:140 },
+  { id:"Double-genis", name:"Double · geniş", nums:"14, 19", balcony:true, min:2, max:3, note:"1 cüt + 1 divan",
+    tiers:[ {cap:"2 nəfər", min:2, max:2, wkdy:150, wknd:170}, {cap:"3 nəfər", min:3, max:3, wkdy:170, wknd:190} ] },
+  { id:"luks", name:"Lüks otaq", nums:"9, 10, 23, 27", cap:"3 nəfər", min:3, max:3, balcony:false, note:"1 cüt + 1 tək", wkdy:150, wknd:170 },
+  { id:"luks15", name:"Lüks otaq", nums:"15", cap:"4 nəfər", min:4, max:4, balcony:true, note:"1 otaqda: 1 cüt + 2 ayrı", wkdy:180, wknd:200 },
+  { id:"Double12", name:"Double · geniş", nums:"12", cap:"4 nəfər", min:4, max:4, balcony:true, note:"1 cüt + 2 ayrı", wkdy:200, wknd:220 },
+];
+
+/* выбор номера заполняется функцией fillRoomSelect() при старте */
+
+let guests = "all";
+function setGuests(btn){ guests = btn.dataset.g; document.querySelectorAll('#gbtns .gbtn').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); render(); }
+function matches(item){ if(guests==="all") return true; const g=parseInt(guests); return g>=item.min && g<=item.max; }
+function ppRows(w1,w2){ return `<div class="pp"><span>Həftə içi</span><b>${w1} ${CUR}</b></div><div class="pp wknd"><span>Həftə sonu</span><b>${w2} ${CUR}</b></div>`; }
+function renderTiers(tiers){
+  let list = tiers;
+  if(guests!=="all"){ const g=parseInt(guests); const f=tiers.filter(t=>g>=t.min&&g<=t.max); if(f.length) list=f; }
+  return list.map((t,i)=>`<div class="tier" ${i>0?'style="margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)"':''}><div class="tier-lbl">${t.cap}</div>${ppRows(t.wkdy,t.wknd)}</div>`).join('');
+}
+function shotBtn(id){ return `<button class="shot-btn" data-id="${id}" style="display:none" onclick="openGallery('${id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 17l-5-5-6 6"/></svg>Şəkillər</button>`; }
+function renderKotec(k){
+  let body;
+  if(k.ladder){
+    if(guests!=="all" && k.base!=null){ const g=parseInt(guests); const price=k.base+(g-k.ladder[0][0])*k.perExtra; body=`<div class="tier"><div class="tier-lbl">${g} nəfər</div><div class="pp"><span>Qiymət</span><b>${price} ${CUR}</b></div></div>`; }
+    else { const lines=k.ladder.map(([n,p])=>`<div class="lr"><span>${n} nəfər</span><b>${p} ${CUR}</b></div>`).join(''); body=`<div class="ladder">${lines}<div class="extra"><b>${k.extra}</b></div></div>`; }
+  } else if(k.tiers){ body=renderTiers(k.tiers); } else { body=ppRows(k.wkdy,k.wknd); }
+  const beds = k.beds?`<div class="k-beds">${k.beds}</div>`:'';
+  const perks = k.perks?`<div class="k-perks">${k.perks.map(p=>`<span class="perk">${p}</span>`).join('')}</div>`:'';
+  return `<div class="kotec${k.feature?' feature':''}"><div class="kotec-top"><div class="no">${k.no}</div><h3>${k.name}</h3><span class="cap-chip">${k.capLabel}</span>${beds}</div><div class="kotec-body">${body}${perks}${shotBtn(k.id)}</div></div>`;
+}
+function renderRoom(r){
+  const bal = r.balcony===true?`<span class="bdg b-yes">Eyvanlı</span>`:r.balcony===false?`<span class="bdg b-no">Eyvansız</span>`:'';
+  const cap = r.cap?`<span class="chip">${r.cap}</span>`:'';
+  const note = r.note?`<div class="r-note">${r.note}</div>`:'';
+  const prices = r.tiers?renderTiers(r.tiers):ppRows(r.wkdy,r.wknd);
+  return `<div class="room"><div class="r-head"><h3>${r.name}</h3>${bal}</div><div class="r-meta"><span class="r-nums">Otaq <b>${r.nums}</b></span>${cap}</div>${note}<div class="r-prices">${prices}</div>${shotBtn(r.id)}</div>`;
+}
+function render(){
+  const ks = KOTECS.filter(matches), rs = ROOMS.filter(matches);
+  const kSec = document.getElementById('kotecSection'), rSec = document.getElementById('roomSection');
+  if(ks.length){
+    kSec.style.display='';
+    let html = ks.map(renderKotec).join('');
+    const g = parseInt(guests);
+    const tmax = Math.max(...KOTECS.filter(k=>k.tiers).map(k=>k.max));
+    if(guests!=="all" && g>tmax && g<=tmax+2){
+      html += `<div class="kotec-note"><div class="kn-label">Qeyd</div><p><b>Kotec</b> və <b>VİP Kotec</b> otaqlarına da əlavə çarpayı (<b>30 ₼</b>) ilə əlavə nəfər yerləşdirmək olar.<br>Maksimum <b>2 çarpayı</b>.</p></div>`;
+    } else if(guests!=="all" && g>tmax+2){
+      html += `<div class="kotec-note"><div class="kn-label">Məsləhət</div><p>Bu qədər qonaq üçün <b>2 ayrı kotec və ya otaq</b> götürə bilərsiniz.</p></div>`;
+    }
+    document.getElementById('kotecResults').innerHTML = html;
+  } else kSec.style.display='none';
+  if(rs.length){ rSec.style.display=''; document.getElementById('roomResults').innerHTML = rs.map(renderRoom).join(''); }
+  else rSec.style.display='none';
+  wirePhotoButtons();
+}
+
+/* фото номеров: otaq-<номер>-<i>.jpg, коттедж: <id>-<i>.jpg */
+const photoCache = {};
+function wirePhotoButtons(){
+  document.querySelectorAll('.shot-btn').forEach(btn=>{
+    const id = btn.dataset.id;
+    if(photoCache[id]===true){ btn.style.display=''; return; }
+    const item = [...ROOMS,...KOTECS].find(x=>x.id===id);
+    const bases = (item&&item.nums)? item.nums.split(',').map(s=>'otaq-'+s.trim()) : [id];
+    bases.forEach(base=>{ const p=new Image(); p.onload=()=>{ photoCache[id]=true; document.querySelectorAll('.shot-btn[data-id="'+id+'"]').forEach(b=>b.style.display=''); }; p.src='photos/'+base+'-1.jpg'; });
+  });
+}
+const MAX_PHOTOS = 6;
+function openGallery(id){
+  const item = [...ROOMS,...KOTECS].find(x=>x.id===id);
+  document.getElementById('galleryTitle').textContent = item?item.name:'Şəkillər';
+  document.getElementById('gallerySub').style.display='none';
+  const grid = document.getElementById('galleryGrid'); grid.innerHTML='';
+  const empty = document.getElementById('galleryEmpty'); empty.style.display='';
+  document.getElementById('galleryModal').classList.add('open');
+  let units = [];
+  if(item && item.nums) item.nums.split(',').map(s=>s.trim()).forEach(n=>units.push({base:'otaq-'+n,label:'Otaq '+n}));
+  else if(item) units.push({base:item.id,label:item.no||item.name});
+  units.forEach((u,ui)=>{ for(let i=1;i<=MAX_PHOTOS;i++){ const img=new Image(); img.src='photos/'+u.base+'-'+i+'.jpg'; img.onload=()=>{ const a=document.createElement('div'); a.className='gph'; a.style.order=ui*100+i; a.style.cursor='zoom-in'; a.onclick=()=>openLightbox(img.src); const cap=document.createElement('span'); cap.className='cap'; cap.textContent=u.label; a.appendChild(img); a.appendChild(cap); grid.appendChild(a); empty.style.display='none'; }; } });
+}
+function closeGallery(){ document.getElementById('galleryModal').classList.remove('open'); }
+
+/* старт */
+(function init(){
+  fillRoomSelect();
+  let l='az';
+  try{ const s=localStorage.getItem('lang'); if(s&&I18N[s]) l=s; }catch(e){}
+  applyLang(l);
+  render();
+})();
+</script>
+</body>
+</html>
