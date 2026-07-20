@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
   :root{
     --ivory:#F6F2E9; --ivory-2:#EFE8D8; --paper:#FBF8F1;
@@ -157,7 +158,7 @@
   .gal-empty{color:var(--muted);font-size:15px;text-align:center;padding:30px;border:1.5px dashed var(--line);border-radius:14px}
 
   /* УСЛУГИ */
-  .svc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:820px;margin:0 auto}
   .svc{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px 20px;text-align:center}
   .svc .ic{width:52px;height:52px;margin:0 auto 12px;border-radius:14px;background:var(--ivory-2);display:flex;align-items:center;justify-content:center}
   .svc .ic svg{width:26px;height:26px;color:var(--brass)}
@@ -169,7 +170,17 @@
 
   /* РЕСТОРАН */
   .rest{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:center}
-  .rest-card{height:280px;border-radius:18px;background:linear-gradient(135deg,#9C7C45,#5b4626);box-shadow:0 30px 60px -30px rgba(28,52,40,.5)}
+  .rest-card{position:relative;height:280px;border-radius:18px;overflow:hidden;background:linear-gradient(135deg,#9C7C45,#5b4626);box-shadow:0 30px 60px -30px rgba(28,52,40,.5)}
+  .rest-slides{position:absolute;inset:0}
+  .rest-slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity .9s ease}
+  .rest-slide.on{opacity:1}
+  .rest-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.45);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
+  .rest-arrow:hover{background:rgba(255,255,255,.32)}
+  .rest-arrow.prev{left:12px}.rest-arrow.next{right:12px}
+  .rest-arrow svg{width:18px;height:18px}
+  .rest-dots{position:absolute;bottom:14px;left:0;right:0;z-index:3;display:flex;gap:7px;justify-content:center}
+  .rest-dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.5);cursor:pointer;transition:.15s}
+  .rest-dots i.on{background:#fff;width:20px;border-radius:100px}
 
   /* КАМПАНИИ / БОНУС */
   .bonus-banner{display:flex;align-items:center;gap:18px;cursor:pointer;outline:none;user-select:none;-webkit-tap-highlight-color:transparent;
@@ -225,9 +236,18 @@
   .c-links a svg{width:15px;height:15px}
   .l-wa{background:#25D366}.l-ig{background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF)}.l-tt{background:#111}.l-call{background:var(--pine)}
   .map-card{border-radius:16px;overflow:hidden;border:1px solid var(--line);min-height:300px;display:flex;flex-direction:column}
-  .map-vis{flex:1;min-height:210px;background:linear-gradient(135deg,#5E7360,#2C4A3B);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.8);font-size:14px;text-align:center;padding:20px}
+  .map-embed{flex:1;min-height:210px;width:100%;filter:saturate(.95);background:var(--ivory-2)}
   .map-actions{display:flex;gap:10px;padding:14px;background:#fff;flex-wrap:wrap}
   .map-actions a{flex:1;text-align:center;justify-content:center}
+  .route-dropdown{position:relative;flex:1}
+  .route-dropdown .btn{width:100%;justify-content:center}
+  .route-menu{position:absolute;bottom:calc(100% + 8px);left:0;right:0;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 20px 40px -20px rgba(28,52,40,.55);padding:6px;display:none;flex-direction:column;gap:2px;z-index:20}
+  .route-menu.open{display:flex}
+  .route-menu a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;font-size:14px;font-weight:600;color:var(--ink);transition:background .15s}
+  .route-menu a:hover{background:var(--ivory-2)}
+  .route-menu a svg{width:18px;height:18px;flex-shrink:0}
+  .route-menu .rm-gmaps svg{color:#4285F4}
+  .route-menu .rm-waze svg{color:#33CCFF}
 
   /* ПОДВАЛ */
   footer.foot{background:var(--pine);color:rgba(246,242,233,.72);padding:40px 0 28px;font-size:13.5px}
@@ -254,7 +274,7 @@
   .g-grid{display:flex;flex-wrap:wrap;gap:10px}
   .g-grid .gph{position:relative;border-radius:10px;overflow:hidden;line-height:0;cursor:zoom-in}
   .g-grid .gph img{height:180px;width:auto;max-width:100%;object-fit:cover}
-  .g-grid .gph .cap{position:absolute;top:8px;left:8px;background:rgba(28,52,40,.78);color:#fff;font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:100px}
+  .g-grid .gph .cap{position:absolute;top:10px;left:10px;background:rgba(28,52,40,.85);color:#fff;font-size:13.5px;font-weight:700;padding:6px 14px;border-radius:100px}
   .g-empty{text-align:center;color:var(--muted);font-size:14px;padding:24px}
   .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;padding:24px;z-index:200;cursor:zoom-out}
   .lightbox.open{display:flex}
@@ -271,7 +291,13 @@
     .nav-links a{padding:11px 0;width:100%;border-bottom:1px solid var(--line);font-size:15px}
     .menu-btn{display:flex}
     .brand{font-size:17px}
-    .room-grid,.kotec-grid,.svc-grid,.places-grid{grid-template-columns:1fr}
+    .room-grid,.kotec-grid,.places-grid{grid-template-columns:1fr}
+    .svc-grid{grid-template-columns:1fr 1fr;gap:12px}
+    .svc{padding:16px 10px}
+    .svc h3{font-size:14.5px;line-height:1.2}
+    .svc p{font-size:11.5px}
+    .svc .ic{width:44px;height:44px;margin-bottom:9px}
+    .svc .ic svg{width:22px;height:22px}
     .gal-track .gph{width:70vw;height:70vw;max-width:280px;max-height:280px}
     .resv-row{grid-template-columns:1fr}
     .hero{height:70vh}
@@ -423,6 +449,16 @@
         <h3 data-i18n="svc_music">Canlı musiqi</h3>
         <p data-i18n="svc_music_s">Hər axşam · 19:00–23:00</p>
       </div>
+      <div class="svc">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 12.55a11 11 0 0114 0"/><path d="M8.5 16a6 6 0 017 0"/><path d="M12 20h.01"/></svg></div>
+        <h3 data-i18n="svc_wifi">Pulsuz Wi-Fi</h3>
+        <p data-i18n="svc_wifi_s">Bütün ərazidə</p>
+      </div>
+      <div class="svc">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="8" width="18" height="10" rx="2"/><path d="M7 8V6a2 2 0 012-2h6a2 2 0 012 2v2"/><path d="M9 12h4a2 2 0 010 4H9v-6"/></svg></div>
+        <h3 data-i18n="svc_parking">Pulsuz Parking</h3>
+        <p data-i18n="svc_parking_s">Qonaqlar üçün</p>
+      </div>
     </div>
     <div class="notes-row">
       <span class="note-pill"><span data-i18n="svc_bed">Əlavə çarpayı</span> — <b>30 ₼</b></span>
@@ -442,7 +478,12 @@
       </div>
       <a href="https://karekodrestaurantmenu.com/menu/15762" target="_blank" rel="noopener" class="btn btn-brass" data-i18n="rest_btn">Restoran menyusu</a>
     </div>
-    <div class="rest-card"></div>
+    <div class="rest-card">
+      <div class="rest-slides" id="restSlides"></div>
+      <button class="rest-arrow prev" onclick="restPrev()" aria-label="Prev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <button class="rest-arrow next" onclick="restNext()" aria-label="Next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+      <div class="rest-dots" id="restDots"></div>
+    </div>
   </div>
 </section>
 
@@ -519,15 +560,26 @@
           <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s7-6.5 7-12a7 7 0 10-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
           <div>
             <div class="lbl" data-i18n="contact_addr">Ünvan</div>
-            <div class="val" data-i18n="contact_addr_val">Oğuz, Azərbaycan</div>
+            <div class="val" data-i18n="contact_addr_val">Oğuz rayonu, S. Qazıyev küç. 21</div>
           </div>
         </div>
       </div>
       <div class="map-card">
-        <div class="map-vis" data-i18n="map_hint">Xəritədə yerimiz</div>
+        <div class="map-embed" id="mapFrame" title="Panorama Resort Oğuz — xəritə"></div>
         <div class="map-actions">
-          <a class="btn btn-brass" href="https://www.google.com/maps/dir/?api=1&destination=Panorama+Resort+O%C4%9Fuz" target="_blank" rel="noopener" data-i18n="contact_route">Marşrutu aç</a>
-          <a class="btn btn-pine" href="https://www.google.com/maps/search/?api=1&query=Panorama+Resort+O%C4%9Fuz" target="_blank" rel="noopener" data-i18n="contact_maps">Google Maps</a>
+          <div class="route-dropdown">
+            <button class="btn btn-brass" onclick="toggleRouteMenu(event)" data-i18n="contact_route">Marşrutu aç</button>
+            <div class="route-menu" id="routeMenu">
+              <a class="rm-gmaps" id="routeGmaps" href="#" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C7.6 2 4 5.6 4 10c0 5.2 6.4 11 7.2 11.7a1.2 1.2 0 001.6 0C13.6 21 20 15.2 20 10c0-4.4-3.6-8-8-8zm0 10.8A2.8 2.8 0 1112 6.4a2.8 2.8 0 010 5.6z"/></svg>
+                Google Maps
+              </a>
+              <a class="rm-waze" id="routeWaze" href="#" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1.1" fill="#fff"/><circle cx="15" cy="10" r="1.1" fill="#fff"/><path d="M8.5 14.5c1 1 5 1 7 0" stroke="#fff" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg>
+                Waze
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -579,7 +631,14 @@
   <img id="lightboxImg" alt="">
 </div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
+/* Всегда открывать/обновлять страницу с самого верха (в т.ч. на мобильных) */
+if('scrollRestoration' in history){ history.scrollRestoration = 'manual'; }
+window.scrollTo(0,0);
+window.addEventListener('load', () => window.scrollTo(0,0));
+window.addEventListener('pageshow', () => window.scrollTo(0,0));
+
 const CUR = "₼";
 
 /* ================= ПЕРЕВОДЫ ================= */
@@ -592,12 +651,12 @@ const I18N = {
     rooms_ey:"Yerləşmə",rooms_title:"Otaqlar və qiymətlər",rooms_filter:"Adam sayını seç",
     gallery_ey:"Fotolar",gallery_title:"Fotoqalereya",gallery_hint:"Resortun və otaqların fotoları.",gallery_empty:"Şəkillər tezliklə əlavə olunacaq.",
     about_ey:"Resort haqqında",about_title:"Panorama Resort Oğuz",about_text:"Şəhər səs-küyündən uzaqda, təbiətlə əhatələnmiş rahat resort. Burada açıq hovuz, sauna, əyləncə zonaları və hər zövqə uyğun otaqlar sizi gözləyir.",
-    services_ey:"Qiymətə daxildir",services_title:"Xidmətlər",svc_breakfast:"Səhər yeməyi",svc_breakfast_s:"Şved stolu · 09:00–11:00",svc_pool:"Açıq hovuz",svc_pool_s:"Yay mövsümü",svc_games:"Əyləncəli oyunlar",svc_games_s:"Bilyard, tennis, stolüstü xokkey, uşaq əyləncəsi",svc_music:"Canlı musiqi",svc_music_s:"Hər axşam · 19:00–23:00",svc_bed:"Əlavə çarpayı",svc_child:"0–5 yaş uşaq (1 nəfər)",svc_free:"pulsuz",
+    services_ey:"Qiymətə daxildir",services_title:"Xidmətlər",svc_breakfast:"Səhər yeməyi",svc_breakfast_s:"Şved stolu · 09:00–11:00",svc_pool:"Açıq hovuz",svc_pool_s:"Yay mövsümü",svc_games:"Əyləncəli oyunlar",svc_games_s:"Bilyard, tennis, stolüstü xokkey, uşaq əyləncəsi",svc_music:"Canlı musiqi",svc_music_s:"Hər axşam · 19:00–23:00",svc_wifi:"Pulsuz Wi-Fi",svc_wifi_s:"Bütün ərazidə",svc_parking:"Pulsuz Parking",svc_parking_s:"Qonaqlar üçün",svc_bed:"Əlavə çarpayı",svc_child:"0–5 yaş uşaq (1 nəfər)",svc_free:"pulsuz",
     rest_ey:"Dad və zövq",rest_title:"Restoran",rest_text:"Yerli və milli mətbəxin ən dadlı yeməkləri, təzə məhsullar və xüsusi atmosfer.",rest_btn:"Restoran menyusu",
     camp_ey:"Xüsusi təkliflər",camp_title:"Kampaniyalar",bonus_t:"Bonus Kartı",bonus_s:"Hər ödənişdən 10% bonus qazan",bonus_s2:"Şərtlər üçün toxun",bonus_how:"Necə işləyir?",bonus_text:"Oteldə hər ödənişin 10%-i bonus kartınıza qaytarılır. Bonuslar yığılır və kifayət qədər məbləğ toplandıqda onunla növbəti gecələməni ödəyə bilərsiniz.",bonus_cond:"Şərt: bonusdan istifadə üçün lazımi məbləğ tam yığılmalıdır.",
     places_ey:"Ətrafda",places_title:"Oğuzda gəzməli yerlər",place1_t:"Göllər və çaylar",place1_s:"Təbii göllər və sərin çaylar.",place2_t:"Qafqaz meşələri",place2_s:"Piyada gəzintilər və təmiz hava.",place3_t:"Tarixi abidələr",place3_s:"Oğuzun qədim məbədləri.",
     resv_ey:"Yer ayırt",resv_title:"Rezervasiya",resv_checkin:"Giriş tarixi",resv_checkout:"Çıxış tarixi",resv_guests:"Qonaq sayı",resv_room:"Otaq seçimi",resv_btn:"WhatsApp ilə rezervasiya et",resv_note:"Düyməyə basdıqda seçdiyiniz məlumatlar WhatsApp-a köçürülür.",
-    contact_ey:"Bizimlə əlaqə",contact_title:"Əlaqə",contact_phone:"Telefon",contact_call:"Zəng et",contact_addr:"Ünvan",contact_addr_val:"Oğuz, Azərbaycan",contact_route:"Marşrutu aç",contact_maps:"Google Maps",map_hint:"Xəritədə yerimiz",
+    contact_ey:"Bizimlə əlaqə",contact_title:"Əlaqə",contact_phone:"Telefon",contact_call:"Zəng et",contact_addr:"Ünvan",contact_addr_val:"Oğuz rayonu, S. Qazıyev küç. 21",contact_route:"Marşrutu aç",contact_maps:"Google Maps",map_hint:"Xəritədə yerimiz",
     endirim:"ENDİRİM",resv_pick:"Tarixləri seçin",resv_baddate:"Tarixləri düzgün seçin",gece:"gecə",gun:"gün",total:"Cəmi",resv_bednote:"6+ nəfər üçün kotec-ə əlavə çarpayı (30 ₼) əlavə etmək olar."
   },
   ru:{
@@ -608,12 +667,12 @@ const I18N = {
     rooms_ey:"Размещение",rooms_title:"Номера и цены",rooms_filter:"Выберите число гостей",
     gallery_ey:"Фото",gallery_title:"Галерея",gallery_hint:"Фотографии отеля и номеров.",gallery_empty:"Фотографии скоро появятся.",
     about_ey:"Об отеле",about_title:"Panorama Resort Oğuz",about_text:"Уютный отель вдали от городского шума, в окружении природы. Открытый бассейн, сауна, зоны отдыха и номера на любой вкус.",
-    services_ey:"Входит в цену",services_title:"Услуги",svc_breakfast:"Завтрак",svc_breakfast_s:"Шведский стол · 09:00–11:00",svc_pool:"Открытый бассейн",svc_pool_s:"Летний сезон",svc_games:"Игры и развлечения",svc_games_s:"Бильярд, теннис, настольный хоккей, детские развлечения",svc_music:"Живая музыка",svc_music_s:"Каждый вечер · 19:00–23:00",svc_bed:"Доп. кровать",svc_child:"Дети 0–5 лет (1 реб.)",svc_free:"бесплатно",
+    services_ey:"Входит в цену",services_title:"Услуги",svc_breakfast:"Завтрак",svc_breakfast_s:"Шведский стол · 09:00–11:00",svc_pool:"Открытый бассейн",svc_pool_s:"Летний сезон",svc_games:"Игры и развлечения",svc_games_s:"Бильярд, теннис, настольный хоккей, детские развлечения",svc_music:"Живая музыка",svc_music_s:"Каждый вечер · 19:00–23:00",svc_wifi:"Бесплатный Wi-Fi",svc_wifi_s:"На всей территории",svc_parking:"Бесплатная парковка",svc_parking_s:"Для гостей",svc_bed:"Доп. кровать",svc_child:"Дети 0–5 лет (1 реб.)",svc_free:"бесплатно",
     rest_ey:"Вкус и уют",rest_title:"Ресторан",rest_text:"Лучшие блюда местной и национальной кухни, свежие продукты и особая атмосфера.",rest_btn:"Меню ресторана",
     camp_ey:"Спецпредложения",camp_title:"Акции",bonus_t:"Бонусная карта",bonus_s:"10% бонусов с каждой оплаты",bonus_s2:"Нажмите для условий",bonus_how:"Как это работает?",bonus_text:"10% каждой оплаты возвращается на бонусную карту. Бонусы накапливаются, и когда собрана нужная сумма — ими можно оплатить следующую ночь.",bonus_cond:"Условие: для использования нужная сумма должна быть собрана полностью.",
     places_ey:"Рядом",places_title:"Что посмотреть в Огузе",place1_t:"Озёра и реки",place1_s:"Природные озёра и прохладные реки.",place2_t:"Кавказские леса",place2_s:"Прогулки и чистый воздух.",place3_t:"Исторические места",place3_s:"Древние памятники Огуза.",
     resv_ey:"Забронировать",resv_title:"Бронирование",resv_checkin:"Дата заезда",resv_checkout:"Дата выезда",resv_guests:"Число гостей",resv_room:"Выбор номера",resv_btn:"Забронировать через WhatsApp",resv_note:"При нажатии выбранные данные переносятся в WhatsApp.",
-    contact_ey:"Свяжитесь с нами",contact_title:"Контакты",contact_phone:"Телефон",contact_call:"Позвонить",contact_addr:"Адрес",contact_addr_val:"Огуз, Азербайджан",contact_route:"Построить маршрут",contact_maps:"Google Maps",map_hint:"Мы на карте",
+    contact_ey:"Свяжитесь с нами",contact_title:"Контакты",contact_phone:"Телефон",contact_call:"Позвонить",contact_addr:"Адрес",contact_addr_val:"Огузский район, ул. С. Газиева, 21",contact_route:"Построить маршрут",contact_maps:"Google Maps",map_hint:"Мы на карте",
     endirim:"СКИДКА",resv_pick:"Выберите даты",resv_baddate:"Проверьте даты",gece:"ночей",gun:"дней",total:"Итого",resv_bednote:"Для 6+ гостей в коттедж можно добавить доп. кровать (30 ₼)."
   },
   en:{
@@ -624,12 +683,12 @@ const I18N = {
     rooms_ey:"Stay",rooms_title:"Rooms & prices",rooms_filter:"Select number of guests",
     gallery_ey:"Photos",gallery_title:"Gallery",gallery_hint:"Photos of the resort and rooms.",gallery_empty:"Photos coming soon.",
     about_ey:"About",about_title:"Panorama Resort Oğuz",about_text:"A cozy resort away from the city noise, surrounded by nature. Open-air pool, sauna, leisure areas and rooms for every taste.",
-    services_ey:"Included in price",services_title:"Services",svc_breakfast:"Breakfast",svc_breakfast_s:"Buffet · 09:00–11:00",svc_pool:"Open-air pool",svc_pool_s:"Summer season",svc_games:"Games & fun",svc_games_s:"Billiards, tennis, table hockey, kids' fun",svc_music:"Live music",svc_music_s:"Every evening · 19:00–23:00",svc_bed:"Extra bed",svc_child:"Kids 0–5 (1 child)",svc_free:"free",
+    services_ey:"Included in price",services_title:"Services",svc_breakfast:"Breakfast",svc_breakfast_s:"Buffet · 09:00–11:00",svc_pool:"Open-air pool",svc_pool_s:"Summer season",svc_games:"Games & fun",svc_games_s:"Billiards, tennis, table hockey, kids' fun",svc_music:"Live music",svc_music_s:"Every evening · 19:00–23:00",svc_wifi:"Free Wi-Fi",svc_wifi_s:"Throughout the property",svc_parking:"Free Parking",svc_parking_s:"For guests",svc_bed:"Extra bed",svc_child:"Kids 0–5 (1 child)",svc_free:"free",
     rest_ey:"Taste & comfort",rest_title:"Restaurant",rest_text:"The finest local and national dishes, fresh produce and a special atmosphere.",rest_btn:"Restaurant menu",
     camp_ey:"Special offers",camp_title:"Offers",bonus_t:"Bonus Card",bonus_s:"Earn 10% back on every payment",bonus_s2:"Tap for conditions",bonus_how:"How it works",bonus_text:"10% of every payment is returned to your bonus card. Bonuses add up, and once you've collected enough you can pay for your next night with them.",bonus_cond:"Condition: the full amount must be collected to use the bonus.",
     places_ey:"Around",places_title:"Things to see in Oguz",place1_t:"Lakes & rivers",place1_s:"Natural lakes and cool rivers.",place2_t:"Caucasus forests",place2_s:"Walks and fresh air.",place3_t:"Historic sites",place3_s:"Ancient landmarks of Oguz.",
     resv_ey:"Reserve",resv_title:"Reservation",resv_checkin:"Check-in",resv_checkout:"Check-out",resv_guests:"Guests",resv_room:"Room",resv_btn:"Book via WhatsApp",resv_note:"On tap, your selection is copied into WhatsApp.",
-    contact_ey:"Get in touch",contact_title:"Contact",contact_phone:"Phone",contact_call:"Call",contact_addr:"Address",contact_addr_val:"Oguz, Azerbaijan",contact_route:"Get directions",contact_maps:"Google Maps",map_hint:"Find us on the map",
+    contact_ey:"Get in touch",contact_title:"Contact",contact_phone:"Phone",contact_call:"Call",contact_addr:"Address",contact_addr_val:"Oguz district, S. Gaziyev str. 21",contact_route:"Get directions",contact_maps:"Google Maps",map_hint:"Find us on the map",
     endirim:"DISCOUNT",resv_pick:"Select dates",resv_baddate:"Check the dates",gece:"nights",gun:"days",total:"Total",resv_bednote:"For 6+ guests an extra bed (30 ₼) can be added in a cottage."
   }
 };
@@ -643,6 +702,33 @@ function applyLang(l){
   try{ localStorage.setItem('lang', l); }catch(e){}
   if(typeof updateReservation==='function') updateReservation();
 }
+
+/* ================= КАРТА И МАРШРУТ ================= */
+const HOTEL_ADDRESS = "Oğuz rayonu, S. Qazıyev küç. 21, Azərbaycan";
+const HOTEL_LAT = 41.0708;
+const HOTEL_LON = 47.4583;
+(function initMap(){
+  const q = encodeURIComponent(HOTEL_ADDRESS);
+  const el = document.getElementById('mapFrame');
+  if(el && window.L){
+    const map = L.map(el, { scrollWheelZoom:false }).setView([HOTEL_LAT, HOTEL_LON], 15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap'
+    }).addTo(map);
+    L.marker([HOTEL_LAT, HOTEL_LON]).addTo(map)
+      .bindPopup('Panorama Resort Oğuz').openPopup();
+  }
+  const gmaps = document.getElementById('routeGmaps');
+  if(gmaps) gmaps.href = `https://www.google.com/maps/dir/?api=1&destination=${q}`;
+  const waze = document.getElementById('routeWaze');
+  if(waze) waze.href = `https://waze.com/ul?q=${q}&navigate=yes`;
+})();
+function toggleRouteMenu(e){
+  e.stopPropagation();
+  document.getElementById('routeMenu').classList.toggle('open');
+}
+document.addEventListener('click', () => { const m=document.getElementById('routeMenu'); if(m) m.classList.remove('open'); });
 
 /* ================= МЕНЮ (моб) ================= */
 function toggleMenu(){ document.getElementById('navLinks').classList.toggle('open'); }
@@ -672,26 +758,94 @@ function prevSlide(){ if(slideEls.length<2) return; showSlide((slideIdx-1+slideE
 function goSlide(i){ showSlide(i); resetTimer(); }
 function resetTimer(){ clearInterval(slideTimer); if(slideEls.length>1) slideTimer = setInterval(()=>showSlide((slideIdx+1)%slideEls.length), 3000); }
 (function buildSlider(){
-  let n = 1;
   function addSlide(src){
     const s=document.createElement('div'); s.className='slide'; s.style.backgroundImage=`url('${src}')`;
     if(!slideEls.length) s.classList.add('on');
     slidesBox.appendChild(s); const idx=slideEls.length; slideEls.push(s);
     const d=document.createElement('i'); if(!idx) d.className='on'; d.onclick=()=>goSlide(idx); dotsBox.appendChild(d);
+    if(slideEls.length===2){ resetTimer(); } // как только появился 2-й слайд — запускаем автопрокрутку
   }
   function finalize(){
     if(!slideEls.length){ const s=document.createElement('div'); s.className='slide s1 on'; slidesBox.appendChild(s); slideEls.push(s); }
     if(slideEls.length<2){ document.querySelectorAll('.hero-arrow').forEach(a=>a.style.display='none'); dotsBox.style.display='none'; }
-    else resetTimer();
   }
-  function tryNext(){
-    if(n>MAX_SLIDES){ finalize(); return; }
-    const img=new Image();
-    img.onload=()=>{ addSlide(img.src); n++; tryNext(); };
-    img.onerror=finalize;
-    img.src=`slider/slider-${n}.jpg`; // ← фото из папки slider (по порядку 1,2,3…)
+
+  // Запускаем загрузку ВСЕХ фото параллельно, но добавляем слайды по порядку (1,2,3…),
+  // как только очередной по счёту файл определился (загрузился или отсутствует).
+  const results = new Array(MAX_SLIDES + 1); // results[n] = {status:'loaded'|'missing', src}
+  let flushed = 1; // следующий номер, который нужно добавить по порядку
+  let settledCount = 0;
+
+  function flush(){
+    while(results[flushed] !== undefined){
+      const r = results[flushed];
+      if(r.status === 'loaded') addSlide(r.src);
+      flushed++;
+    }
+    if(settledCount === MAX_SLIDES) finalize();
   }
-  tryNext();
+
+  for(let n = 1; n <= MAX_SLIDES; n++){
+    const img = new Image();
+    img.onload = () => { results[n] = {status:'loaded', src: img.src}; settledCount++; flush(); };
+    img.onerror = () => { results[n] = {status:'missing'}; settledCount++; flush(); };
+    img.src = `slider/slider-${n}.jpg`; // ← фото из папки slider (по порядку 1,2,3…)
+  }
+})();
+
+/* ================= МИНИ-СЛАЙДЕР РЕСТОРАНА (jpg/png, до 20 фото) ================= */
+(function buildRestSlider(){
+  const box = document.getElementById('restSlides');
+  const dotsBox = document.getElementById('restDots');
+  if(!box) return;
+  const MAX_REST = 20;
+  const EXTS = ['jpg','png'];
+  let els = [], idx = 0, timer;
+
+  function show(i){
+    els.forEach((s,n)=>s.classList.toggle('on', n===i));
+    dotsBox.querySelectorAll('i').forEach((d,n)=>d.classList.toggle('on', n===i));
+    idx = i;
+  }
+  window.restNext = function(){ if(els.length<2) return; show((idx+1)%els.length); resetTimer(); };
+  window.restPrev = function(){ if(els.length<2) return; show((idx-1+els.length)%els.length); resetTimer(); };
+  function goTo(i){ show(i); resetTimer(); }
+  function resetTimer(){ clearInterval(timer); if(els.length>1) timer = setInterval(()=>show((idx+1)%els.length), 3500); }
+
+  function addSlide(src){
+    const s=document.createElement('div'); s.className='rest-slide'; s.style.backgroundImage=`url('${src}')`;
+    if(!els.length) s.classList.add('on');
+    box.appendChild(s); const i=els.length; els.push(s);
+    const d=document.createElement('i'); if(!i) d.className='on'; d.onclick=()=>goTo(i); dotsBox.appendChild(d);
+    if(els.length===2) resetTimer();
+  }
+  function finalize(){
+    if(els.length<2){ document.querySelectorAll('.rest-card .rest-arrow').forEach(a=>a.style.display='none'); dotsBox.style.display='none'; }
+  }
+
+  // Пробуем jpg, потом png для одного номера
+  function loadOne(n, cb){
+    let i = 0;
+    function tryExt(){
+      if(i>=EXTS.length){ cb(null); return; }
+      const img = new Image();
+      img.onload = () => cb(img.src);
+      img.onerror = () => { i++; tryExt(); };
+      img.src = `restoran/restoran-${n}.${EXTS[i]}`;
+    }
+    tryExt();
+  }
+
+  // Грузим все номера параллельно, добавляем строго по порядку
+  const results = new Array(MAX_REST + 1);
+  let flushed = 1, settled = 0;
+  function flush(){
+    while(results[flushed] !== undefined){ if(results[flushed]) addSlide(results[flushed]); flushed++; }
+    if(settled === MAX_REST) finalize();
+  }
+  for(let n=1; n<=MAX_REST; n++){
+    loadOne(n, (src) => { results[n] = src; settled++; flush(); });
+  }
 })();
 
 /* ================= ФОТОГАЛЕРЕЯ ================= */
