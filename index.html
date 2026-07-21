@@ -176,7 +176,7 @@
 
   /* ГАЛЕРЕЯ — горизонтальный слайдер */
   .gal-carousel{position:relative}
-  .gal-track{display:flex;gap:10px;overflow-x:auto;scroll-behavior:smooth;padding:4px 2px;-ms-overflow-style:none;scrollbar-width:none}
+  .gal-track{display:flex;gap:10px;overflow-x:auto;padding:4px 2px;-ms-overflow-style:none;scrollbar-width:none}
   .gal-track::-webkit-scrollbar{display:none}
   .gal-track .gph{position:relative;flex:0 0 auto;width:260px;height:260px;border-radius:12px;overflow:hidden;cursor:zoom-in;scroll-snap-align:start;background:var(--ivory-2)}
   .gal-track .gph.gph-skel{background:linear-gradient(100deg,var(--ivory-2) 30%,#e7dfca 50%,var(--ivory-2) 70%);background-size:200% 100%;animation:galShimmer 1.3s ease-in-out infinite}
@@ -315,6 +315,13 @@
   .lightbox.open{display:flex}
   .lightbox img{max-width:100%;max-height:92vh;border-radius:10px}
   .lb-close{position:absolute;top:14px;right:20px;background:none;border:none;color:#fff;font-size:34px;cursor:pointer;line-height:1}
+
+  /* КНОПКА НАВЕРХ */
+  .to-top{position:fixed;right:20px;bottom:20px;z-index:90;width:46px;height:46px;border-radius:50%;border:none;background:var(--pine);color:var(--ivory);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 28px -10px rgba(28,52,40,.6);opacity:0;visibility:hidden;transform:translateY(10px);transition:opacity .25s,transform .25s,visibility .25s}
+  .to-top.show{opacity:1;visibility:visible;transform:translateY(0)}
+  .to-top:hover{background:var(--brass)}
+  .to-top svg{width:22px;height:22px}
+  @media(max-width:720px){ .to-top{right:14px;bottom:14px;width:42px;height:42px} }
 
   @media(max-width:920px){
     .intro,.rest,.contact-grid{grid-template-columns:1fr}
@@ -687,6 +694,11 @@
   <img id="lightboxImg" alt="">
 </div>
 
+<!-- КНОПКА НАВЕРХ -->
+<button class="to-top" id="toTop" onclick="scrollTop()" aria-label="Yuxarı qalx">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 /* Всегда открывать/обновлять страницу с самого верха (в т.ч. на мобильных) */
@@ -822,6 +834,16 @@ document.addEventListener('click', () => {
 /* ================= МЕНЮ (моб) ================= */
 function toggleMenu(){ document.getElementById('navLinks').classList.toggle('open'); }
 function closeMenu(){ document.getElementById('navLinks').classList.remove('open'); }
+
+/* ================= КНОПКА НАВЕРХ ================= */
+function scrollTop(){ window.scrollTo({top:0, behavior:'smooth'}); }
+(function wireToTop(){
+  const btn = document.getElementById('toTop');
+  if(!btn) return;
+  const onScroll = () => btn.classList.toggle('show', window.scrollY > 400);
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+})();
 let galTimer, galRealN = 0;
 function galItemStep(grid){
   const c = grid.firstElementChild;
@@ -834,32 +856,31 @@ function galScroll(dir){
   const grid = document.getElementById('galGrid');
   if(!grid || galRealN < 1) return;
   const step = galItemStep(grid), setW = step * galRealN;
-  if(dir > 0 && grid.scrollLeft >= setW - 1){ grid.scrollTo({left: grid.scrollLeft - setW, behavior:'auto'}); }
-  if(dir < 0 && grid.scrollLeft <= 1){ grid.scrollTo({left: grid.scrollLeft + setW, behavior:'auto'}); }
+  if(dir > 0 && grid.scrollLeft >= setW - 1){ grid.scrollLeft -= setW; }        // мгновенный перескок
+  if(dir < 0 && grid.scrollLeft <= 1){ grid.scrollLeft += setW; }
   grid.scrollBy({left: dir*step, behavior:'smooth'});
   resetGalTimer();
 }
 function galAutoTick(){
   const grid = document.getElementById('galGrid');
-  if(!grid || galRealN < 2) return;
+  if(!grid || galRealN < 2 || document.hidden) return;
   const step = galItemStep(grid), setW = step * galRealN;
-  // как только прокрутили целый набор — мгновенно возвращаемся к идентичному кадру
-  // из первого набора (контент дублирован, скачок незаметен) и листаем дальше
-  if(grid.scrollLeft >= setW - 1){ grid.scrollTo({left: grid.scrollLeft - setW, behavior:'auto'}); }
+  if(grid.scrollLeft >= setW - 1){ grid.scrollLeft -= setW; }                    // мгновенно, без анимации
   grid.scrollBy({left: step, behavior:'smooth'});
 }
-function resetGalTimer(){
-  clearInterval(galTimer);
-  if(galRealN >= 2) galTimer = setInterval(galAutoTick, 2500);
-}
+function resetGalTimer(){ clearInterval(galTimer); if(galRealN >= 2) galTimer = setInterval(galAutoTick, 2500); }
 function pauseGalTimer(){ clearInterval(galTimer); }
 (function wireGalAutoplay(){
   const grid = document.getElementById('galGrid');
   if(!grid) return;
   grid.addEventListener('mouseenter', pauseGalTimer);
   grid.addEventListener('mouseleave', resetGalTimer);
+  grid.addEventListener('pointerdown', pauseGalTimer);
+  grid.addEventListener('pointerup', resetGalTimer);
   grid.addEventListener('touchstart', pauseGalTimer, {passive:true});
   grid.addEventListener('touchend', resetGalTimer, {passive:true});
+  grid.addEventListener('touchcancel', resetGalTimer, {passive:true});
+  document.addEventListener('visibilitychange', ()=>{ document.hidden ? pauseGalTimer() : resetGalTimer(); });
 })();
 
 /* плавная прокрутка по якорям с учётом высоты шапки */
