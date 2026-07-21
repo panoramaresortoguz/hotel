@@ -695,7 +695,7 @@
 </div>
 
 <!-- КНОПКА НАВЕРХ -->
-<button class="to-top" id="toTop" onclick="scrollTop()" aria-label="Yuxarı qalx">
+<button class="to-top" id="toTop" onclick="goTop()" aria-label="Yuxarı qalx">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
 </button>
 
@@ -836,15 +836,20 @@ function toggleMenu(){ document.getElementById('navLinks').classList.toggle('ope
 function closeMenu(){ document.getElementById('navLinks').classList.remove('open'); }
 
 /* ================= КНОПКА НАВЕРХ ================= */
-function scrollTop(){
-  const start = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
-  if(start <= 0) return;
+function goTop(){
+  const doc = document.documentElement, body = document.body;
+  const start = window.pageYOffset || doc.scrollTop || body.scrollTop || 0;
+  if(start <= 2) return;
+  const prevD = doc.style.scrollBehavior, prevB = body.style.scrollBehavior;
+  doc.style.scrollBehavior = 'auto'; body.style.scrollBehavior = 'auto';   // форсируем мгновенность
   const dur = 450, t0 = performance.now();
   const ease = t => 1 - Math.pow(1 - t, 3);
   function step(now){
     const p = Math.min(1, (now - t0) / dur);
-    window.scrollTo(0, Math.round(start * (1 - ease(p))));
-    if(p < 1) requestAnimationFrame(step);
+    const y = Math.round(start * (1 - ease(p)));
+    window.scrollTo(0, y); doc.scrollTop = y; body.scrollTop = y;          // двигаем все контейнеры
+    if(p < 1){ requestAnimationFrame(step); }
+    else { doc.style.scrollBehavior = prevD; body.style.scrollBehavior = prevB; }
   }
   requestAnimationFrame(step);
 }
