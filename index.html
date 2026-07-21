@@ -836,7 +836,19 @@ function toggleMenu(){ document.getElementById('navLinks').classList.toggle('ope
 function closeMenu(){ document.getElementById('navLinks').classList.remove('open'); }
 
 /* ================= КНОПКА НАВЕРХ ================= */
-function scrollTop(){ window.scrollTo({top:0, behavior:'smooth'}); }
+function scrollTop(){
+  const start = window.pageYOffset || document.documentElement.scrollTop;
+  if(start <= 0) return;
+  const dur = 450, t0 = performance.now();
+  const ease = t => 1 - Math.pow(1 - t, 3); // быстрый старт, мягкое завершение
+  function step(now){
+    const p = Math.min(1, (now - t0) / dur);
+    const y = Math.round(start * (1 - ease(p)));
+    document.documentElement.scrollTop = document.body.scrollTop = y;
+    if(p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
 (function wireToTop(){
   const btn = document.getElementById('toTop');
   if(!btn) return;
