@@ -769,31 +769,35 @@ document.addEventListener('click', () => {
 /* ================= МЕНЮ (моб) ================= */
 function toggleMenu(){ document.getElementById('navLinks').classList.toggle('open'); }
 function closeMenu(){ document.getElementById('navLinks').classList.remove('open'); }
-const GAL_STEP = 280;
-let galTimer, galIdx = 0, galRealN = 0;
+let galTimer, galRealN = 0;
+function galItemStep(grid){
+  const c = grid.firstElementChild;
+  if(!c) return 270;
+  const st = getComputedStyle(grid);
+  const gap = parseFloat(st.columnGap || st.gap || 10) || 10;
+  return c.getBoundingClientRect().width + gap;
+}
 function galScroll(dir){
   const grid = document.getElementById('galGrid');
   if(!grid || galRealN < 1) return;
-  galIdx = Math.max(0, Math.min(galRealN, galIdx + dir));
-  grid.scrollTo({left: galIdx*GAL_STEP, behavior:'smooth'});
-  if(galIdx >= galRealN){ setTimeout(()=>{ grid.scrollTo({left:0, behavior:'auto'}); galIdx=0; }, 550); }
+  const step = galItemStep(grid), setW = step * galRealN;
+  if(dir > 0 && grid.scrollLeft + step >= setW - 1){ grid.scrollTo({left: grid.scrollLeft - setW, behavior:'auto'}); }
+  if(dir < 0 && grid.scrollLeft - step < -1){ grid.scrollTo({left: grid.scrollLeft + setW, behavior:'auto'}); }
+  grid.scrollBy({left: dir*step, behavior:'smooth'});
   resetGalTimer();
 }
 function galAutoTick(){
   const grid = document.getElementById('galGrid');
   if(!grid || galRealN < 2) return;
-  galIdx++;
-  grid.scrollTo({left: galIdx*GAL_STEP, behavior:'smooth'});
-  if(galIdx >= galRealN){
-    // Дошли до клона первого фото (визуально это уже "первое" фото) —
-    // мгновенно (без анимации) перематываем к настоящему первому фото,
-    // и слайдер продолжает листать дальше по кругу, а не назад.
-    setTimeout(() => { grid.scrollTo({left:0, behavior:'auto'}); galIdx = 0; }, 550);
-  }
+  const step = galItemStep(grid), setW = step * galRealN;
+  // если ушли за пределы первого набора — мгновенно возвращаемся на такой же кадр
+  // из первого набора (контент дублирован, поэтому скачок незаметен) и листаем дальше
+  if(grid.scrollLeft + step >= setW - 1){ grid.scrollTo({left: grid.scrollLeft - setW, behavior:'auto'}); }
+  grid.scrollBy({left: step, behavior:'smooth'});
 }
 function resetGalTimer(){
   clearInterval(galTimer);
-  if(galRealN >= 2) galTimer = setInterval(galAutoTick, 3000);
+  if(galRealN >= 2) galTimer = setInterval(galAutoTick, 2500);
 }
 function pauseGalTimer(){ clearInterval(galTimer); }
 (function wireGalAutoplay(){
@@ -927,12 +931,15 @@ function resetTimer(){ clearInterval(slideTimer); if(slideEls.length>1) slideTim
   function finalizeGallery(){
     const real = Array.from(grid.children);
     if(!real.length) return;
-    // клон первого фото в конец — для незаметного бесконечного цикла
-    const clone = real[0].cloneNode(true);
-    const cloneImg = clone.querySelector('img');
-    clone.onclick = () => openLightbox(cloneImg.src);
-    grid.appendChild(clone);
     galRealN = real.length;
+    // дублируем ВЕСЬ набор в конец — лента идёт дальше теми же фото,
+    // а при заходе на копию мгновенно возвращаемся к идентичному кадру → шва не видно
+    real.forEach(node=>{
+      const clone = node.cloneNode(true);
+      const cimg = clone.querySelector('img');
+      if(cimg) clone.onclick = () => openLightbox(cimg.src);
+      grid.appendChild(clone);
+    });
     resetGalTimer();
   }
   for(let i=1;i<=GAL_MAX;i++){
