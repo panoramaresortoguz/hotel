@@ -438,14 +438,8 @@
         <button class="gbtn" data-g="6" onclick="setGuests(this)">6</button>
         <button class="gbtn" data-g="8" onclick="setGuests(this)">8</button>
         <button class="gbtn" data-g="10" onclick="setGuests(this)">10</button>
-        <button class="gbtn" data-g="custom" onclick="openCustom(this)" data-i18n="ozun_yaz">Özün yaz</button>
-      </div>
-      <div class="custom-box" id="customBox">
-        <input type="number" id="customN" min="1" max="60" placeholder="14" onkeydown="if(event.key==='Enter')applyCustom()">
-        <button class="gbtn cbtn" onclick="applyCustom()" data-i18n="cust_show">Göstər</button>
       </div>
     </div>
-    <div id="customResult"></div>
     <div id="roomSection">
       <div class="subsec" data-i18n="sub_rooms">Otaqlar</div>
       <div class="room-grid" id="roomResults"></div>
@@ -768,7 +762,6 @@ function applyLang(l){
   try{ localStorage.setItem('lang', l); }catch(e){}
   if(typeof render==='function') render();
   if(typeof updateReservation==='function') updateReservation();
-  if(typeof renderCustom==='function' && customLastN>0) renderCustom(customLastN);
 }
 
 /* ================= КАРТА И МАРШРУТ ================= */
@@ -1114,83 +1107,7 @@ function setGuests(btn){
   guests = btn.dataset.g;
   document.querySelectorAll('#gbtns .gbtn').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
-  document.getElementById('customBox').classList.remove('open');
-  document.getElementById('customResult').innerHTML=''; customLastN=0;
   render();
-}
-
-/* ===== Özün yaz — умный подбор комбинаций (с учётом реального количества) ===== */
-const UNIT_MAP = {
-  'VIP Deluxe (Kotec 1)': { cap:10, avail:1, price:p=>350 + Math.max(0, Math.min(p,10)-2)*50 },
-  'VİP Kotec (Kotec 2)':  { cap:7,  avail:1, price:p=>(p<=2?250:300) + Math.max(0,p-5)*30 },
-  'Kotec 3–8':            { cap:7,  avail:6, price:p=>(p<=2?200:250) + Math.max(0,p-5)*30 },
-  'Lüks otaq (15)':       { cap:4,  avail:1, price:()=>180 },
-  'Lüks otaq':            { cap:3,  avail:4, price:()=>150 },
-  'Standart otaq':        { cap:2,  avail:3, price:()=>100 },
-};
-function fillCombo(N, pref){
-  let rem=N; const items=[], used={};
-  const cap=n=>UNIT_MAP[n].cap, left=n=>UNIT_MAP[n].avail-(used[n]||0);
-  const take=(n,people)=>{ items.push({name:n,people}); used[n]=(used[n]||0)+1; };
-  for(const n of pref){ while(rem>=cap(n) && left(n)>0){ take(n,cap(n)); rem-=cap(n); } }
-  if(rem>0){
-    let cand = pref.filter(n=>cap(n)>=rem && left(n)>0).sort((a,b)=>cap(a)-cap(b))[0]
-            || Object.keys(UNIT_MAP).filter(n=>cap(n)>=rem && left(n)>0).sort((a,b)=>cap(a)-cap(b))[0];
-    if(cand){ take(cand,rem); rem=0; }
-    else {
-      const all=Object.keys(UNIT_MAP).sort((a,b)=>cap(b)-cap(a));
-      let guard=0;
-      while(rem>0 && guard<50){ const n=all.find(n=>left(n)>0); if(!n) break; const p=Math.min(cap(n),rem); take(n,p); rem-=p; guard++; }
-    }
-  }
-  return {items, shortage: rem>0?rem:0};
-}
-function comboTotal(items){ return items.reduce((s,it)=>s+UNIT_MAP[it.name].price(it.people),0); }
-function groupItems(items){
-  const map={};
-  items.forEach(it=>{ const k=it.name+'|'+it.people; if(!map[k]) map[k]={name:it.name,people:it.people,count:0}; map[k].count++; });
-  return Object.values(map).sort((a,b)=>UNIT_MAP[b.name].cap-UNIT_MAP[a.name].cap);
-}
-function suggestCombos(N){
-  const strategies = [
-    ['Kotec 3–8','Lüks otaq (15)','Lüks otaq','Standart otaq'],
-    ['VİP Kotec (Kotec 2)','Kotec 3–8','Lüks otaq (15)','Standart otaq'],
-    ['VIP Deluxe (Kotec 1)','Kotec 3–8','Lüks otaq (15)','Standart otaq'],
-  ];
-  const seen=new Set(), combos=[];
-  strategies.forEach(pref=>{
-    const r=fillCombo(N,pref);
-    if(r.shortage>0) return;
-    const groups=groupItems(r.items);
-    const sig=groups.map(g=>g.name+'x'+g.count+'p'+g.people).sort().join(',');
-    if(seen.has(sig)) return; seen.add(sig);
-    combos.push({groups, total:comboTotal(r.items)});
-  });
-  return combos.sort((a,b)=>a.total-b.total);
-}
-let customLastN = 0;
-function openCustom(btn){
-  document.querySelectorAll('#gbtns .gbtn').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
-  document.getElementById('customBox').classList.add('open');
-  document.getElementById('customN').focus();
-}
-function applyCustom(){
-  const n=parseInt(document.getElementById('customN').value);
-  if(!n||n<1){ document.getElementById('customResult').innerHTML=''; customLastN=0; return; }
-  customLastN=n; renderCustom(n);
-}
-function renderCustom(n){
-  const dict=I18N[lang], res=document.getElementById('customResult');
-  const combos=suggestCombos(n);
-  if(!combos.length){ res.innerHTML=`<div class="combo-note" style="margin-top:16px">${dict.combo_note}</div>`; return; }
-  let html=`<div class="combo-head">${n} ${dict.combo_people}</div><div class="combo-wrap">`;
-  combos.forEach((c,i)=>{
-    const lis=c.groups.map(g=>`<li><span class="cg-n">${g.count>1?g.count+' × ':''}${g.name}</span><span class="cg-c">${g.people} ${dict.combo_people}${g.count>1?' × '+g.count:''}</span></li>`).join('');
-    html+=`<div class="combo"><div class="c-lbl">${dict.combo_label} ${i+1}</div><ul>${lis}</ul><div class="c-total"><span>${dict.total} ≈</span><b>${c.total} ₼</b></div></div>`;
-  });
-  html+=`</div><div class="combo-note">${dict.combo_note}</div>`;
-  res.innerHTML=html;
 }
 function matches(item){ if(guests==="all") return true; const g=parseInt(guests); return g>=item.min && g<=item.max; }
 function ppRows(w1,w2){ const d=I18N[lang]; return `<div class="pp"><span>${d.weekday}</span><b>${w1} ${CUR}</b></div><div class="pp wknd"><span>${d.weekend}</span><b>${w2} ${CUR}</b></div>`; }
