@@ -59,8 +59,9 @@
   .s5{background:linear-gradient(135deg,#7C8CA0,#40566b)}
   .hero-veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,30,25,.28),rgba(20,30,25,.55))}
   .hero-in{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;color:#fff;padding:0 22px}
-  .hero-in .kick{font-size:12px;letter-spacing:.34em;text-transform:uppercase;color:var(--brass-light);font-weight:700;margin-bottom:14px}
-  .hero-logo{width:auto;max-width:min(240px,58vw);max-height:120px;margin-bottom:18px;filter:drop-shadow(0 6px 20px rgba(0,0,0,.45))}
+  .hero-in .kick{display:none}
+  .hero-in h1{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+  .hero-logo{width:min(430px,88vw);height:auto;margin-bottom:20px;filter:drop-shadow(0 6px 20px rgba(0,0,0,.55))}
   .hero-in h1{font-size:clamp(38px,6.4vw,72px);font-weight:500;letter-spacing:.01em;text-shadow:0 2px 24px rgba(0,0,0,.35)}
   .hero-in h1 b{font-weight:600}
   .hero-in p{font-size:clamp(15px,2.2vw,19px);margin-top:16px;max-width:540px;color:rgba(255,255,255,.92);font-family:'Fraunces',serif;font-style:italic}
@@ -106,6 +107,21 @@
   .gbtn{padding:9px 16px;border:1px solid var(--line);border-radius:100px;background:var(--ivory);cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;color:var(--pine);transition:.15s}
   .gbtn:hover{background:var(--ivory-2)}
   .gbtn.on{background:var(--pine);color:var(--ivory);border-color:var(--pine)}
+  .custom-box{display:none;margin-top:12px;gap:8px;align-items:center;flex-wrap:wrap}
+  .custom-box.open{display:flex}
+  .custom-box input{width:120px;padding:9px 14px;border:1px solid var(--line);border-radius:100px;font-family:inherit;font-size:14px;background:var(--ivory);color:var(--ink)}
+  .custom-box .cbtn{background:var(--pine);color:var(--ivory);border-color:var(--pine)}
+  .combo-head{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--brass);font-weight:700;margin:18px 0 2px}
+  .combo-wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:12px}
+  .combo{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .combo .c-lbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--brass);font-weight:700;margin-bottom:10px}
+  .combo ul{list-style:none;display:flex;flex-direction:column;gap:7px;margin-bottom:11px}
+  .combo li{display:flex;justify-content:space-between;gap:10px;font-size:14px;color:var(--ink)}
+  .combo li .cg-c{color:var(--muted);white-space:nowrap}
+  .combo .c-total{border-top:1px dashed var(--line);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-size:13.5px}
+  .combo .c-total span{color:var(--muted)}
+  .combo .c-total b{font-family:'Fraunces',serif;font-size:19px;color:var(--brass)}
+  .combo-note{font-size:12px;color:var(--muted);font-style:italic;margin-top:12px}
 
   .subsec{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--brass);font-weight:700;margin:26px 0 14px}
   .room-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
@@ -403,8 +419,14 @@
         <button class="gbtn" data-g="6" onclick="setGuests(this)">6</button>
         <button class="gbtn" data-g="8" onclick="setGuests(this)">8</button>
         <button class="gbtn" data-g="10" onclick="setGuests(this)">10</button>
+        <button class="gbtn" data-g="custom" onclick="openCustom(this)" data-i18n="ozun_yaz">Özün yaz</button>
+      </div>
+      <div class="custom-box" id="customBox">
+        <input type="number" id="customN" min="1" max="60" placeholder="14" onkeydown="if(event.key==='Enter')applyCustom()">
+        <button class="gbtn cbtn" onclick="applyCustom()" data-i18n="cust_show">Göstər</button>
       </div>
     </div>
+    <div id="customResult"></div>
     <div id="roomSection">
       <div class="subsec">Otaqlar</div>
       <div class="room-grid" id="roomResults"></div>
@@ -507,6 +529,7 @@
       <h2 data-i18n="resv_title">Rezervasiya</h2>
     </div>
     <div class="resv">
+      <div class="field"><label data-i18n="resv_name">Ad, Soyad</label><input type="text" id="rvName" placeholder="Ad Soyad"></div>
       <div class="resv-row">
         <div class="field"><label data-i18n="resv_checkin">Giriş tarixi</label><input type="date" id="rvIn" onchange="updateReservation()"></div>
         <div class="field"><label data-i18n="resv_checkout">Çıxış tarixi</label><input type="date" id="rvOut" onchange="updateReservation()"></div>
@@ -677,7 +700,7 @@ const I18N = {
     places_ey:"Ətrafda",places_title:"Oğuzda gəzməli yerlər",place1_t:"Göllər və çaylar",place1_s:"Təbii göllər və sərin çaylar.",place2_t:"Qafqaz meşələri",place2_s:"Piyada gəzintilər və təmiz hava.",place3_t:"Tarixi abidələr",place3_s:"Oğuzun qədim məbədləri.",
     resv_ey:"Yer ayırt",resv_title:"Rezervasiya",resv_checkin:"Giriş tarixi",resv_checkout:"Çıxış tarixi",resv_guests:"Qonaq sayı",resv_room:"Otaq seçimi",resv_btn:"WhatsApp ilə rezervasiya et",resv_note:"Düyməyə basdıqda seçdiyiniz məlumatlar WhatsApp-a köçürülür.",
     contact_ey:"Bizimlə əlaqə",contact_title:"Əlaqə",contact_phone:"Telefon",contact_call:"Zəng et",contact_addr:"Ünvan",contact_addr_val:"Oğuz rayonu, S. Qazıyev küç. 21",contact_route:"Marşrutu aç",contact_maps:"Google Maps",map_hint:"Xəritədə yerimiz",
-    endirim:"ENDİRİM",resv_pick:"Tarixləri seçin",resv_baddate:"Tarixləri düzgün seçin",gece:"gecə",gun:"gün",total:"Cəmi",resv_bednote:"6+ nəfər üçün kotec-ə əlavə çarpayı (30 ₼) əlavə etmək olar."
+    endirim:"ENDİRİM",resv_pick:"Tarixləri seçin",resv_baddate:"Tarixləri düzgün seçin",gece:"gecə",gun:"gün",total:"Cəmi",resv_bednote:"6+ nəfər üçün kotec-ə əlavə çarpayı (30 ₼) əlavə etmək olar.",ozun_yaz:"Özün yaz",cust_show:"Göstər",combo_label:"Məsləhət",combo_people:"nəfər",combo_note:"Qiymətlər təxminidir (həftə içi). Dəqiq hesablama üçün bizimlə əlaqə saxlayın.",resv_name:"Ad, Soyad"
   },
   ru:{
     nav_home:"Главная",nav_rooms:"Номера",nav_gallery:"Галерея",nav_about:"Об отеле",nav_services:"Услуги",nav_restaurant:"Ресторан",nav_campaigns:"Акции",nav_places:"Что рядом",nav_reservation:"Бронирование",nav_contact:"Контакты",
@@ -693,7 +716,7 @@ const I18N = {
     places_ey:"Рядом",places_title:"Что посмотреть в Огузе",place1_t:"Озёра и реки",place1_s:"Природные озёра и прохладные реки.",place2_t:"Кавказские леса",place2_s:"Прогулки и чистый воздух.",place3_t:"Исторические места",place3_s:"Древние памятники Огуза.",
     resv_ey:"Забронировать",resv_title:"Бронирование",resv_checkin:"Дата заезда",resv_checkout:"Дата выезда",resv_guests:"Число гостей",resv_room:"Выбор номера",resv_btn:"Забронировать через WhatsApp",resv_note:"При нажатии выбранные данные переносятся в WhatsApp.",
     contact_ey:"Свяжитесь с нами",contact_title:"Контакты",contact_phone:"Телефон",contact_call:"Позвонить",contact_addr:"Адрес",contact_addr_val:"Огузский район, ул. С. Газиева, 21",contact_route:"Построить маршрут",contact_maps:"Google Maps",map_hint:"Мы на карте",
-    endirim:"СКИДКА",resv_pick:"Выберите даты",resv_baddate:"Проверьте даты",gece:"ночей",gun:"дней",total:"Итого",resv_bednote:"Для 6+ гостей в коттедж можно добавить доп. кровать (30 ₼)."
+    endirim:"СКИДКА",resv_pick:"Выберите даты",resv_baddate:"Проверьте даты",gece:"ночей",gun:"дней",total:"Итого",resv_bednote:"Для 6+ гостей в коттедж можно добавить доп. кровать (30 ₼).",ozun_yaz:"Своё число",cust_show:"Показать",combo_label:"Совет",combo_people:"чел.",combo_note:"Цены примерные (будни). Для точного расчёта свяжитесь с нами.",resv_name:"Имя, Фамилия"
   },
   en:{
     nav_home:"Home",nav_rooms:"Rooms",nav_gallery:"Gallery",nav_about:"About",nav_services:"Services",nav_restaurant:"Restaurant",nav_campaigns:"Offers",nav_places:"Nearby",nav_reservation:"Reservation",nav_contact:"Contact",
@@ -709,7 +732,7 @@ const I18N = {
     places_ey:"Around",places_title:"Things to see in Oguz",place1_t:"Lakes & rivers",place1_s:"Natural lakes and cool rivers.",place2_t:"Caucasus forests",place2_s:"Walks and fresh air.",place3_t:"Historic sites",place3_s:"Ancient landmarks of Oguz.",
     resv_ey:"Reserve",resv_title:"Reservation",resv_checkin:"Check-in",resv_checkout:"Check-out",resv_guests:"Guests",resv_room:"Room",resv_btn:"Book via WhatsApp",resv_note:"On tap, your selection is copied into WhatsApp.",
     contact_ey:"Get in touch",contact_title:"Contact",contact_phone:"Phone",contact_call:"Call",contact_addr:"Address",contact_addr_val:"Oguz district, S. Gaziyev str. 21",contact_route:"Get directions",contact_maps:"Google Maps",map_hint:"Find us on the map",
-    endirim:"DISCOUNT",resv_pick:"Select dates",resv_baddate:"Check the dates",gece:"nights",gun:"days",total:"Total",resv_bednote:"For 6+ guests an extra bed (30 ₼) can be added in a cottage."
+    endirim:"DISCOUNT",resv_pick:"Select dates",resv_baddate:"Check the dates",gece:"nights",gun:"days",total:"Total",resv_bednote:"For 6+ guests an extra bed (30 ₼) can be added in a cottage.",ozun_yaz:"Custom",cust_show:"Show",combo_label:"Suggestion",combo_people:"guests",combo_note:"Prices are approximate (weekday). Contact us for an exact quote.",resv_name:"Full name"
   }
 };
 let lang = 'az';
@@ -723,6 +746,7 @@ function applyLang(l){
   const lb = document.getElementById('langBtn'); if(lb) lb.textContent = l.toUpperCase();
   try{ localStorage.setItem('lang', l); }catch(e){}
   if(typeof updateReservation==='function') updateReservation();
+  if(typeof renderCustom==='function' && customLastN>0) renderCustom(customLastN);
 }
 
 /* ================= КАРТА И МАРШРУТ ================= */
@@ -1026,13 +1050,15 @@ function updateReservation(){
   sum.innerHTML=`<b>${st.nights}</b> ${dict.gece} · <b>${st.nights+1}</b> ${dict.gun} · ${dict.total}: <b>${st.total} ₼</b>`;
 }
 function sendReservation(){
+  const name=(document.getElementById('rvName').value||'').trim();
   const ci=document.getElementById('rvIn').value||'—', co=document.getElementById('rvOut').value||'—';
   const g=document.getElementById('rvGuests').value;
   const sel=document.getElementById('rvRoom'); const roomName=sel.options[sel.selectedIndex]?sel.options[sel.selectedIndex].text:'';
   const item=[...ROOMS,...KOTECS].find(x=>x.id===sel.value);
   let extra='';
   if(ci!=='—'&&co!=='—'&&item){ const st=computeStay(item,parseInt(g),ci,co); if(st){ extra=`%0AGecə: ${st.nights} gecə (${st.nights+1} gün)%0ACəmi: ${st.total} ₼`; } }
-  const msg=`Salam! Rezervasiya etmək istəyirəm.%0AGiriş: ${ci}%0AÇıxış: ${co}%0AQonaq: ${g}%0AOtaq: ${encodeURIComponent(roomName)}${extra}`;
+  const nameLine = name ? `%0AAd Soyad: ${encodeURIComponent(name)}` : '';
+  const msg=`Salam! Rezervasiya etmək istəyirəm.${nameLine}%0AGiriş: ${ci}%0AÇıxış: ${co}%0AQonaq: ${g}%0AOtaq: ${encodeURIComponent(roomName)}${extra}`;
   window.open(`https://wa.me/994702153923?text=${msg}`,'_blank');
 }
 
@@ -1060,7 +1086,88 @@ const ROOMS = [
 /* выбор номера заполняется функцией fillRoomSelect() при старте */
 
 let guests = "all";
-function setGuests(btn){ guests = btn.dataset.g; document.querySelectorAll('#gbtns .gbtn').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); render(); }
+function setGuests(btn){
+  guests = btn.dataset.g;
+  document.querySelectorAll('#gbtns .gbtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('customBox').classList.remove('open');
+  document.getElementById('customResult').innerHTML=''; customLastN=0;
+  render();
+}
+
+/* ===== Özün yaz — умный подбор комбинаций (с учётом реального количества) ===== */
+const UNIT_MAP = {
+  'VIP Deluxe (Kotec 1)': { cap:10, avail:1, price:p=>350 + Math.max(0, Math.min(p,10)-2)*50 },
+  'VİP Kotec (Kotec 2)':  { cap:7,  avail:1, price:p=>(p<=2?250:300) + Math.max(0,p-5)*30 },
+  'Kotec 3–8':            { cap:7,  avail:6, price:p=>(p<=2?200:250) + Math.max(0,p-5)*30 },
+  'Lüks otaq (15)':       { cap:4,  avail:1, price:()=>180 },
+  'Lüks otaq':            { cap:3,  avail:4, price:()=>150 },
+  'Standart otaq':        { cap:2,  avail:3, price:()=>100 },
+};
+function fillCombo(N, pref){
+  let rem=N; const items=[], used={};
+  const cap=n=>UNIT_MAP[n].cap, left=n=>UNIT_MAP[n].avail-(used[n]||0);
+  const take=(n,people)=>{ items.push({name:n,people}); used[n]=(used[n]||0)+1; };
+  for(const n of pref){ while(rem>=cap(n) && left(n)>0){ take(n,cap(n)); rem-=cap(n); } }
+  if(rem>0){
+    let cand = pref.filter(n=>cap(n)>=rem && left(n)>0).sort((a,b)=>cap(a)-cap(b))[0]
+            || Object.keys(UNIT_MAP).filter(n=>cap(n)>=rem && left(n)>0).sort((a,b)=>cap(a)-cap(b))[0];
+    if(cand){ take(cand,rem); rem=0; }
+    else {
+      const all=Object.keys(UNIT_MAP).sort((a,b)=>cap(b)-cap(a));
+      let guard=0;
+      while(rem>0 && guard<50){ const n=all.find(n=>left(n)>0); if(!n) break; const p=Math.min(cap(n),rem); take(n,p); rem-=p; guard++; }
+    }
+  }
+  return {items, shortage: rem>0?rem:0};
+}
+function comboTotal(items){ return items.reduce((s,it)=>s+UNIT_MAP[it.name].price(it.people),0); }
+function groupItems(items){
+  const map={};
+  items.forEach(it=>{ const k=it.name+'|'+it.people; if(!map[k]) map[k]={name:it.name,people:it.people,count:0}; map[k].count++; });
+  return Object.values(map).sort((a,b)=>UNIT_MAP[b.name].cap-UNIT_MAP[a.name].cap);
+}
+function suggestCombos(N){
+  const strategies = [
+    ['Kotec 3–8','Lüks otaq (15)','Lüks otaq','Standart otaq'],
+    ['VİP Kotec (Kotec 2)','Kotec 3–8','Lüks otaq (15)','Standart otaq'],
+    ['VIP Deluxe (Kotec 1)','Kotec 3–8','Lüks otaq (15)','Standart otaq'],
+  ];
+  const seen=new Set(), combos=[];
+  strategies.forEach(pref=>{
+    const r=fillCombo(N,pref);
+    if(r.shortage>0) return;
+    const groups=groupItems(r.items);
+    const sig=groups.map(g=>g.name+'x'+g.count+'p'+g.people).sort().join(',');
+    if(seen.has(sig)) return; seen.add(sig);
+    combos.push({groups, total:comboTotal(r.items)});
+  });
+  return combos.sort((a,b)=>a.total-b.total);
+}
+let customLastN = 0;
+function openCustom(btn){
+  document.querySelectorAll('#gbtns .gbtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('customBox').classList.add('open');
+  document.getElementById('customN').focus();
+}
+function applyCustom(){
+  const n=parseInt(document.getElementById('customN').value);
+  if(!n||n<1){ document.getElementById('customResult').innerHTML=''; customLastN=0; return; }
+  customLastN=n; renderCustom(n);
+}
+function renderCustom(n){
+  const dict=I18N[lang], res=document.getElementById('customResult');
+  const combos=suggestCombos(n);
+  if(!combos.length){ res.innerHTML=`<div class="combo-note" style="margin-top:16px">${dict.combo_note}</div>`; return; }
+  let html=`<div class="combo-head">${n} ${dict.combo_people}</div><div class="combo-wrap">`;
+  combos.forEach((c,i)=>{
+    const lis=c.groups.map(g=>`<li><span class="cg-n">${g.count>1?g.count+' × ':''}${g.name}</span><span class="cg-c">${g.people} ${dict.combo_people}${g.count>1?' × '+g.count:''}</span></li>`).join('');
+    html+=`<div class="combo"><div class="c-lbl">${dict.combo_label} ${i+1}</div><ul>${lis}</ul><div class="c-total"><span>${dict.total} ≈</span><b>${c.total} ₼</b></div></div>`;
+  });
+  html+=`</div><div class="combo-note">${dict.combo_note}</div>`;
+  res.innerHTML=html;
+}
 function matches(item){ if(guests==="all") return true; const g=parseInt(guests); return g>=item.min && g<=item.max; }
 function ppRows(w1,w2){ return `<div class="pp"><span>Həftə içi</span><b>${w1} ${CUR}</b></div><div class="pp wknd"><span>Həftə sonu</span><b>${w2} ${CUR}</b></div>`; }
 function renderTiers(tiers){
