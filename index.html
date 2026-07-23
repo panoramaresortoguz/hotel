@@ -69,7 +69,7 @@
   
 <link rel="icon" href="icon.png" type="image/png">
 <link rel="apple-touch-icon" href="icon.png">
-<meta name="theme-color" content="#1C3428">
+<meta name="color-scheme" content="light only">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -84,7 +84,7 @@
     --wrap:1120px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  html{overflow-x:hidden}
+  html{overflow-x:hidden;background:var(--ivory);color-scheme:light}
   body{font-family:'Inter',system-ui,sans-serif;background:var(--ivory);color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden;max-width:100%}
   h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:600;line-height:1.08}
   a{color:inherit;text-decoration:none}
@@ -149,7 +149,7 @@
 
   /* СЕКЦИИ */
   section{scroll-margin-top:66px}
-  .sec{padding:44px 0}
+  .sec{padding:44px 0;background:var(--ivory)}
   .sec.alt{background:var(--paper)}
   .sec.dark{background:var(--pine);color:var(--ivory)}
   .sec-head{max-width:640px;margin-bottom:34px}
@@ -365,9 +365,9 @@
   .m-cond{font-size:13px;color:var(--muted)}
   .g-head{margin-bottom:14px;padding-right:30px}
   .g-head h3{margin-bottom:2px} .g-sub{font-size:13.5px;color:var(--muted)} .g-sub b{color:var(--ink)}
-  .g-grid{display:flex;flex-wrap:wrap;gap:10px}
-  .g-grid .gph{position:relative;border-radius:10px;overflow:hidden;line-height:0;cursor:zoom-in}
-  .g-grid .gph img{height:180px;width:auto;max-width:100%;object-fit:cover}
+  .g-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+  .g-grid .gph{position:relative;border-radius:10px;overflow:hidden;line-height:0;cursor:zoom-in;aspect-ratio:16/9;background:var(--ivory-2)}
+  .g-grid .gph img{width:100%;height:100%;object-fit:cover}
   .g-grid .gph .cap{position:absolute;top:10px;left:10px;background:rgba(28,52,40,.85);color:#fff;font-size:13.5px;font-weight:700;padding:6px 14px;border-radius:100px}
   .g-empty{text-align:center;color:var(--muted);font-size:14px;padding:24px}
   .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;padding:24px;z-index:200;cursor:zoom-out}
@@ -991,6 +991,8 @@ function resetTimer(){ clearInterval(slideTimer); if(slideEls.length>1) slideTim
   function finalize(){
     if(!slideEls.length){ const s=document.createElement('div'); s.className='slide s1 on'; slidesBox.appendChild(s); slideEls.push(s); }
     if(slideEls.length<2){ document.querySelectorAll('.hero-arrow').forEach(a=>a.style.display='none'); dotsBox.style.display='none'; }
+    // очередь: слайдер готов → фото комнат → галерея → ресторан
+    wirePhotoButtons(loadGallery);
   }
 
   // Запускаем загрузку ВСЕХ фото параллельно, но добавляем слайды по порядку (1,2,3…),
@@ -1017,7 +1019,7 @@ function resetTimer(){ clearInterval(slideTimer); if(slideEls.length>1) slideTim
 })();
 
 /* ================= МИНИ-СЛАЙДЕР РЕСТОРАНА (jpg/png, до 20 фото) ================= */
-(function buildRestSlider(){
+function buildRestSlider(){
   const box = document.getElementById('restSlides');
   const dotsBox = document.getElementById('restDots');
   if(!box) return;
@@ -1069,14 +1071,13 @@ function resetTimer(){ clearInterval(slideTimer); if(slideEls.length>1) slideTim
   for(let n=1; n<=MAX_REST; n++){
     loadOne(n, (src) => { results[n] = src; settled++; flush(); });
   }
-})();
+}
 
 /* ================= ФОТОГАЛЕРЕЯ ================= */
-(function loadGallery(){
+function loadGallery(){
   const grid = document.getElementById('galGrid');
   const empty = document.getElementById('galEmpty');
   const GAL_MAX = 16;
-  let settled = 0;
   function finalizeGallery(){
     const real = Array.from(grid.children);
     if(!real.length) return;
@@ -1087,29 +1088,33 @@ function resetTimer(){ clearInterval(slideTimer); if(slideEls.length>1) slideTim
       if(cimg) clone.onclick = () => openLightbox(cimg.src);
       grid.appendChild(clone);
     });
-    // дублируем набор в конец (минимум 1 копия), а если фото мало и ленту
-    // всё ещё не прокрутить — добавляем ещё копии, чтобы автопрокрутка работала
     appendSet();
     let guard = 0;
     while(grid.scrollWidth < grid.clientWidth * 2 + 40 && guard < 6){ appendSet(); guard++; }
     resetGalTimer();
   }
-  for(let i=1;i<=GAL_MAX;i++){
-    const d = document.createElement('div'); d.className='gph gph-skel';
-    const img = document.createElement('img');
-    img.loading = 'eager';
+  // грузим ПО ОЧЕРЕДИ: каждое фото появляется сразу, не дожидаясь остальных,
+  // и не забивает канал параллельными запросами (важно для мобильного интернета)
+  function loadNext(i){
+    if(i > GAL_MAX){ finalizeGallery(); buildRestSlider(); return; }
+    const img = new Image();
     img.decoding = 'async';
     img.alt = 'Panorama Resort Oğuz';
-    img.onload = () => { d.classList.remove('gph-skel'); img.classList.add('loaded'); empty.style.display='none'; };
-    d.onclick = () => openLightbox(img.src);
-    d.appendChild(img);
-    const settle = () => { settled++; if(settled===GAL_MAX) finalizeGallery(); };
-    img.addEventListener('load', settle);
-    img.addEventListener('error', () => { d.remove(); settle(); });
-    grid.appendChild(d);
-    img.src = `qalereya/qalereya-${i}.jpg`; // ← фото из папки qalereya
+    img.onload = () => {
+      const d = document.createElement('div'); d.className='gph';
+      img.classList.add('loaded');
+      d.onclick = () => openLightbox(img.src);
+      d.appendChild(img);
+      grid.appendChild(d);
+      empty.style.display='none';
+      if(grid.children.length === 1) resetGalTimer();
+      loadNext(i+1);
+    };
+    img.onerror = () => { finalizeGallery(); buildRestSlider(); };  // дальше файлов нет → грузим ресторан
+    img.src = `qalereya/qalereya-${i}.jpg`;
   }
-})();
+  loadNext(1);
+}
 
 /* ================= БОНУС / ЛАЙТБОКС ================= */
 function openBonus(){ document.getElementById('bonusModal').classList.add('open'); }
@@ -1254,14 +1259,32 @@ function render(){
 
 /* фото номеров: otaq-<номер>-<i>.jpg, коттедж: <id>-<i>.jpg */
 const photoCache = {};
-function wirePhotoButtons(){
-  document.querySelectorAll('.shot-btn').forEach(btn=>{
-    const id = btn.dataset.id;
-    if(photoCache[id]===true){ btn.style.display=''; return; }
+let photoProbeDone = false;
+function wirePhotoButtons(done){
+  const btns = [...document.querySelectorAll('.shot-btn')];
+  // показываем уже известные кнопки
+  btns.forEach(b=>{ if(photoCache[b.dataset.id]===true) b.style.display=''; });
+  if(photoProbeDone){ if(done) done(); return; }   // проверяем файлы только один раз
+  const ids = [...new Set(btns.map(b=>b.dataset.id))];
+  let left = 0, finished = false;
+  const finish = () => { if(!finished){ finished = true; photoProbeDone = true; if(done) done(); } };
+  ids.forEach(id=>{
     const item = [...ROOMS,...KOTECS].find(x=>x.id===id);
     const bases = (item&&item.nums)? item.nums.split(',').map(s=>'otaq-'+s.trim()) : [id];
-    bases.forEach(base=>{ const p=new Image(); p.onload=()=>{ photoCache[id]=true; document.querySelectorAll('.shot-btn[data-id="'+id+'"]').forEach(b=>b.style.display=''); }; p.src='photos/'+base+'-1.jpg'; });
+    bases.forEach(base=>{
+      left++;
+      const p = new Image();
+      const settle = () => { if(--left === 0) finish(); };
+      p.onload = () => {
+        photoCache[id] = true;
+        document.querySelectorAll('.shot-btn[data-id="'+id+'"]').forEach(b=>b.style.display='');
+        settle();
+      };
+      p.onerror = settle;
+      p.src = 'photos/'+base+'-1.jpg';
+    });
   });
+  if(left === 0) finish();
 }
 const MAX_PHOTOS = 6;
 function openGallery(id){
