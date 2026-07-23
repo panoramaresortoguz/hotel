@@ -1192,11 +1192,13 @@ const KOTECS = [
 ];
 const ROOMS = [
   { id:"standart", name:"Standart otaq · kiçik", nums:"24, 25, 26", cap:"2 nəfər", min:2, max:2, balcony:false, note:"1 cüt", wkdy:100, wknd:120 },
-  { id:"luks-genis", name:"Lüks otaq · geniş", nums:"11, 13, 16, 17, 18, 20", cap:"2 nəfər", min:2, max:2, balcony:true, note:"11, 13, 16 — 2 tək · 17, 18, 20 — 1 cüt", wkdy:120, wknd:140 },
+  { id:"luks-genis", name:"Lüks otaq · geniş", nums:"11, 13, 16, 17, 18, 20", cap:"2 nəfər", min:2, max:2, balcony:true, note:"11, 13, 16 — 2 tək · 17, 18, 20 — 1 cüt", wkdy:120, wknd:140,
+    photoGroups:[ {base:"otaq-11", label:"Otaq 11, 13, 16"}, {base:"otaq-17", label:"Otaq 17, 18, 20"} ] },
   { id:"Double-21-22", name:"Double otaq", nums:"21, 22", cap:"2 nəfər", min:2, max:2, balcony:false, note:"21 — 1 cüt · 22 — 2 tək", wkdy:120, wknd:140 },
   { id:"Double-genis", name:"Double · geniş", nums:"14, 19", balcony:true, min:2, max:3, note:"1 cüt + 1 divan",
     tiers:[ {cap:"2 nəfər", min:2, max:2, wkdy:150, wknd:170}, {cap:"3 nəfər", min:3, max:3, wkdy:170, wknd:190} ] },
-  { id:"luks", name:"Lüks otaq", nums:"9, 10, 23, 27", cap:"3 nəfər", min:3, max:3, balcony:false, note:"1 cüt + 1 tək", wkdy:150, wknd:170 },
+  { id:"luks", name:"Lüks otaq", nums:"9, 10, 23, 27", cap:"3 nəfər", min:3, max:3, balcony:false, note:"1 cüt + 1 tək", wkdy:150, wknd:170,
+    photoGroups:[ {base:"otaq-9", label:"Otaq 9, 10"}, {base:"otaq-23", label:"Otaq 23, 27"} ] },
   { id:"luks15", name:"Lüks otaq", nums:"15", cap:"4 nəfər", min:4, max:4, balcony:true, note:"1 otaqda: 1 cüt + 2 ayrı", wkdy:180, wknd:200 },
   { id:"Double12", name:"Double · geniş", nums:"12", cap:"4 nəfər", min:4, max:4, balcony:true, note:"1 cüt + 2 ayrı", wkdy:200, wknd:220 },
 ];
@@ -1270,7 +1272,8 @@ function wirePhotoButtons(done){
   const finish = () => { if(!finished){ finished = true; photoProbeDone = true; if(done) done(); } };
   ids.forEach(id=>{
     const item = [...ROOMS,...KOTECS].find(x=>x.id===id);
-    const bases = (item&&item.nums)? item.nums.split(',').map(s=>'otaq-'+s.trim()) : [id];
+    const bases = (item&&item.photoGroups)? item.photoGroups.map(g=>g.base)
+                : (item&&item.nums)? item.nums.split(',').map(s=>'otaq-'+s.trim()) : [id];
     bases.forEach(base=>{
       left++;
       const p = new Image();
@@ -1295,7 +1298,8 @@ function openGallery(id){
   const empty = document.getElementById('galleryEmpty'); empty.style.display='';
   document.getElementById('galleryModal').classList.add('open');
   let units = [];
-  if(item && item.nums) item.nums.split(',').map(s=>s.trim()).forEach(n=>units.push({base:'otaq-'+n,label:'Otaq '+n}));
+  if(item && item.photoGroups) units = item.photoGroups.slice();
+  else if(item && item.nums) item.nums.split(',').map(s=>s.trim()).forEach(n=>units.push({base:'otaq-'+n,label:'Otaq '+n}));
   else if(item) units.push({base:item.id,label:item.no||item.name});
   units.forEach((u,ui)=>{ for(let i=1;i<=MAX_PHOTOS;i++){ const img=new Image(); img.src='photos/'+u.base+'-'+i+'.jpg'; img.onload=()=>{ const a=document.createElement('div'); a.className='gph'; a.style.order=ui*100+i; a.style.cursor='zoom-in'; a.style.aspectRatio='1 / 1'; a.style.overflow='hidden'; img.style.width='100%'; img.style.height='100%'; img.style.objectFit='cover'; a.onclick=()=>openLightbox(img.src); const cap=document.createElement('span'); cap.className='cap'; cap.textContent=u.label; a.appendChild(img); a.appendChild(cap); grid.appendChild(a); empty.style.display='none'; }; } });
 }
