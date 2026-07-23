@@ -1183,10 +1183,13 @@ function sendReservation(){
 /* ================= ДАННЫЕ НОМЕРОВ ================= */
 const KOTECS = [
   { id:"kotec3", no:"Kotec 3–8", name:"Kotec", capLabel:"2–5 nəfərlik", min:2, max:5, extraBeds:2, beds:"1 cüt, 2 tək",
+    photoGroups:[ {base:"kotec3", label:"Kotec 3–8"} ],
     tiers:[ {cap:"2 nəfər", min:2, max:2, wkdy:200, wknd:220}, {cap:"3–5 nəfər", min:3, max:5, wkdy:250, wknd:280} ] },
   { id:"kotec2", no:"Kotec 2", name:"VİP Kotec", capLabel:"2–5 nəfərlik", min:2, max:5, extraBeds:2, beds:"1 cüt, 2 tək",
+    photoGroups:[ {base:"kotec2", label:"VİP Kotec"} ],
     tiers:[ {cap:"2 nəfər", min:2, max:2, wkdy:250, wknd:280}, {cap:"3–5 nəfər", min:3, max:5, wkdy:300, wknd:350} ] },
   { id:"kotec1", no:"Kotec 1", name:"VIP Deluxe", capLabel:"2–10 nəfərlik", min:2, max:10, feature:true,
+    photoGroups:[ {base:"kotec1", label:"VIP Deluxe"} ],
     beds:"2 cüt + uşaqlar üçün yataq (4 nəfərlik)", perks:["Qapalı hovuz","Sauna","Cakuzi"],
     ladder:[[2,350],[4,450],[6,550],[8,650]], base:350, perExtra:50, extra:"Əlavə hər nəfər +50 ₼" },
 ];
