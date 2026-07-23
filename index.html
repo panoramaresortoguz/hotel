@@ -1194,11 +1194,13 @@ const KOTECS = [
     ladder:[[2,350],[4,450],[6,550],[8,650]], base:350, perExtra:50, extra:"Əlavə hər nəfər +50 ₼" },
 ];
 const ROOMS = [
-  { id:"standart", name:"Standart otaq · kiçik", nums:"24, 25, 26", cap:"2 nəfər", min:2, max:2, balcony:false, note:"1 cüt", wkdy:100, wknd:120 },
+  { id:"standart", name:"Standart otaq · kiçik", nums:"24, 25, 26", cap:"2 nəfər", min:2, max:2, balcony:false, note:"1 cüt", wkdy:100, wknd:120,
+    photoGroups:[ {base:"otaq-24", label:"Otaq 24, 25, 26"} ] },
   { id:"luks-genis", name:"Lüks otaq · geniş", nums:"11, 13, 16, 17, 18, 20", cap:"2 nəfər", min:2, max:2, balcony:true, note:"11, 13, 16 — 2 tək · 17, 18, 20 — 1 cüt", wkdy:120, wknd:140,
     photoGroups:[ {base:"otaq-11", label:"Otaq 11, 13, 16"}, {base:"otaq-17", label:"Otaq 17, 18, 20"} ] },
   { id:"Double-21-22", name:"Double otaq", nums:"21, 22", cap:"2 nəfər", min:2, max:2, balcony:false, note:"21 — 1 cüt · 22 — 2 tək", wkdy:120, wknd:140 },
   { id:"Double-genis", name:"Double · geniş", nums:"14, 19", balcony:true, min:2, max:3, note:"1 cüt + 1 divan",
+    photoGroups:[ {base:"otaq-14", label:"Otaq 14, 19"} ],
     tiers:[ {cap:"2 nəfər", min:2, max:2, wkdy:150, wknd:170}, {cap:"3 nəfər", min:3, max:3, wkdy:170, wknd:190} ] },
   { id:"luks", name:"Lüks otaq", nums:"9, 10, 23, 27", cap:"3 nəfər", min:3, max:3, balcony:false, note:"1 cüt + 1 tək", wkdy:150, wknd:170,
     photoGroups:[ {base:"otaq-9", label:"Otaq 9, 10"}, {base:"otaq-23", label:"Otaq 23, 27"} ] },
