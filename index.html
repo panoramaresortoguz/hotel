@@ -1294,7 +1294,7 @@ function wirePhotoButtons(done){
   });
   if(left === 0) finish();
 }
-const MAX_PHOTOS = 6;
+const MAX_PHOTOS = 30;
 function openGallery(id){
   const item = [...ROOMS,...KOTECS].find(x=>x.id===id);
   document.getElementById('galleryTitle').textContent = item?item.name:'Şəkillər';
@@ -1306,7 +1306,25 @@ function openGallery(id){
   if(item && item.photoGroups) units = item.photoGroups.slice();
   else if(item && item.nums) item.nums.split(',').map(s=>s.trim()).forEach(n=>units.push({base:'otaq-'+n,label:'Otaq '+n}));
   else if(item) units.push({base:item.id,label:item.no||item.name});
-  units.forEach((u,ui)=>{ for(let i=1;i<=MAX_PHOTOS;i++){ const img=new Image(); img.src='photos/'+u.base+'-'+i+'.jpg'; img.onload=()=>{ const a=document.createElement('div'); a.className='gph'; a.style.order=ui*100+i; a.style.cursor='zoom-in'; a.style.aspectRatio='1 / 1'; a.style.overflow='hidden'; img.style.width='100%'; img.style.height='100%'; img.style.objectFit='cover'; a.onclick=()=>openLightbox(img.src); const cap=document.createElement('span'); cap.className='cap'; cap.textContent=u.label; a.appendChild(img); a.appendChild(cap); grid.appendChild(a); empty.style.display='none'; }; } });
+  units.forEach((u,ui)=>{
+    // грузим по порядку 1,2,3… и останавливаемся, когда файла больше нет
+    (function next(i){
+      if(i > MAX_PHOTOS) return;
+      const img = new Image();
+      img.onload = () => {
+        const a=document.createElement('div'); a.className='gph';
+        a.style.order=ui*100+i; a.style.cursor='zoom-in'; a.style.aspectRatio='1 / 1'; a.style.overflow='hidden';
+        img.style.width='100%'; img.style.height='100%'; img.style.objectFit='cover';
+        a.onclick=()=>openLightbox(img.src);
+        const cap=document.createElement('span'); cap.className='cap'; cap.textContent=u.label;
+        a.appendChild(img); a.appendChild(cap); grid.appendChild(a);
+        empty.style.display='none';
+        next(i+1);
+      };
+      img.onerror = () => {};   // фото нет — дальше не ищем
+      img.src = 'photos/'+u.base+'-'+i+'.jpg';
+    })(1);
+  });
 }
 function closeGallery(){ document.getElementById('galleryModal').classList.remove('open'); }
 
