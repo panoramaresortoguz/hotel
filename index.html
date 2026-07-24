@@ -716,7 +716,7 @@
         <a href="#rooms" data-i18n="nav_rooms">Otaqlar</a>
         <a href="#gallery" data-i18n="nav_gallery">Fotoqalereya</a>
         <a href="#restaurant" data-i18n="nav_restaurant">Restoran</a>
-        <a href="#reservation" data-i18n="nav_reservation">Rezervasiya</a>
+        <a href="#reservation" data-i18n="nav_reservation">Qiymətləri öyrən</a>
         <a href="#contact" data-i18n="nav_contact">Əlaqə</a>
       </div>
     </div>
@@ -770,8 +770,8 @@ const CUR = "₼";
 /* ================= ПЕРЕВОДЫ ================= */
 const I18N = {
   az:{
-    nav_home:"Ana səhifə",nav_rooms:"Otaqlar",nav_gallery:"Fotoqalereya",nav_about:"Resort haqqında",nav_services:"Xidmətlər",nav_restaurant:"Restoran",nav_campaigns:"Kampaniyalar",nav_places:"Gəzməli yerlər",nav_reservation:"Rezervasiya",nav_contact:"Əlaqə",
-    hero_tag:"Təbiətin qoynunda rahatlıq və kef",hero_cta1:"Otaqlara bax",hero_cta2:"Rezervasiya et",
+    nav_home:"Ana səhifə",nav_rooms:"Otaqlar",nav_gallery:"Fotoqalereya",nav_about:"Resort haqqında",nav_services:"Xidmətlər",nav_restaurant:"Restoran",nav_campaigns:"Kampaniyalar",nav_places:"Gəzməli yerlər",nav_reservation:"Qiymətləri öyrən",nav_contact:"Əlaqə",
+    hero_tag:"Təbiətin qoynunda rahatlıq və kef",hero_cta1:"Otaqlara bax",hero_cta2:"Qiymətləri öyrən",
     intro_ey:"Xoş gəlmisiniz",intro_title:"Dağların qoynunda istirahət",intro_text:"Oğuzun təmiz havası, açıq hovuz, ləziz mətbəx və hər axşam canlı musiqi — ailəvi və dostyana istirahət üçün ideal məkan.",
     stat_rooms:"otaq növü",stat_kotec:"kotec",stat_service:"xidmət",
     rooms_ey:"Yerləşmə",rooms_title:"Otaqlar və qiymətlər",rooms_filter:"Adam sayını seç",
@@ -781,7 +781,7 @@ const I18N = {
     rest_ey:"Dad və zövq",rest_title:"Restoran",rest_text:"Yerli və milli mətbəxin ən dadlı yeməkləri, təzə məhsullar və xüsusi atmosfer.",rest_btn:"Restoran menyusu",
     camp_ey:"Xüsusi təkliflər",camp_title:"Kampaniyalar",bonus_t:"Bonus Kartı",bonus_s:"Hər ödənişdən 10% bonus qazan",bonus_s2:"Şərtlər üçün toxun",bonus_how:"Necə işləyir?",bonus_text:"Oteldə hər ödənişin 10%-i bonus kartınıza qaytarılır. Bonuslar yığılır və kifayət qədər məbləğ toplandıqda onunla növbəti gecələməni ödəyə bilərsiniz.",bonus_cond:"Şərt: bonusdan istifadə üçün lazımi məbləğ tam yığılmalıdır.",
     places_ey:"Ətrafda",places_title:"Oğuzda gəzməli yerlər",place1_t:"Göllər və çaylar",place1_s:"Təbii göllər və sərin çaylar.",place2_t:"Qafqaz meşələri",place2_s:"Piyada gəzintilər və təmiz hava.",place3_t:"Tarixi abidələr",place3_s:"Oğuzun qədim məbədləri.",
-    resv_ey:"Yer ayırt",resv_title:"Rezervasiya",resv_checkin:"Giriş tarixi",resv_checkout:"Çıxış tarixi",resv_guests:"Qonaq sayı",resv_room:"Otaq seçimi",resv_btn:"WhatsApp ilə rezervasiya et",resv_note:"Düyməyə basdıqda seçdiyiniz məlumatlar WhatsApp-a köçürülür.",
+    resv_ey:"Yer ayırt",resv_title:"Qiymətləri öyrən",resv_checkin:"Giriş tarixi",resv_checkout:"Çıxış tarixi",resv_guests:"Qonaq sayı",resv_room:"Otaq seçimi",resv_btn:"WhatsApp ilə məlumat əldə et!",resv_note:"Düyməyə basdıqda seçdiyiniz məlumatlar WhatsApp-a köçürülür.",
     contact_ey:"Bizimlə əlaqə",contact_title:"Əlaqə",contact_phone:"Telefon",contact_call:"Zəng et",contact_addr:"Ünvan",contact_addr_val:"Oğuz rayonu, S. Qazıyev küç. 21",contact_route:"Marşrutu aç",contact_maps:"Google Maps",map_hint:"Xəritədə yerimiz",
     endirim:"ENDİRİM",resv_pick:"Tarixləri seçin",resv_baddate:"Tarixləri düzgün seçin",gece:"gecə",gun:"gün",total:"Cəmi",resv_bednote:"6+ nəfər üçün kotec-ə əlavə çarpayı (30 ₼) əlavə etmək olar.",ozun_yaz:"Özün yaz",cust_show:"Göstər",combo_label:"Məsləhət",combo_people:"nəfər",combo_note:"Qiymətlər təxminidir (həftə içi). Dəqiq hesablama üçün bizimlə əlaqə saxlayın.",resv_name:"Ad, Soyad",sub_rooms:"Otaqlar",sub_kotecs:"Koteclər",weekday:"Həftə içi",weekend:"Həftə sonu",balcony_yes:"Eyvanlı",balcony_no:"Eyvansız",room_word:"Otaq",price_word:"Qiymət",qeyd_label:"Qeyd",qeyd_text:"<b>Kotec</b> və <b>VİP Kotec</b> otaqlarına da əlavə çarpayı (<b>30 ₼</b>) ilə əlavə nəfər yerləşdirmək olar.<br>Maksimum <b>2 çarpayı</b>.",advice_label:"Məsləhət",advice_text:"Bu qədər qonaq üçün <b>2 ayrı kotec və ya otaq</b> götürə bilərsiniz."
   },
@@ -1175,7 +1175,7 @@ function sendReservation(){
   let extra='';
   if(ci!=='—'&&co!=='—'&&item){ const st=computeStay(item,parseInt(g),ci,co); if(st){ extra=`%0AGecə: ${st.nights} gecə (${st.nights+1} gün)%0ACəmi: ${st.total} ₼`; } }
   const nameLine = name ? `%0AAd Soyad: ${encodeURIComponent(name)}` : '';
-  const msg=`Salam! Rezervasiya etmək istəyirəm.${nameLine}%0AGiriş: ${ci}%0AÇıxış: ${co}%0AQonaq: ${g}%0AOtaq: ${encodeURIComponent(roomName)}${extra}`;
+  const msg=`Salam! Boş yer haqqında məlumat almaq istəyirəm.${nameLine}%0AGiriş: ${ci}%0AÇıxış: ${co}%0AQonaq: ${g}%0AOtaq: ${encodeURIComponent(roomName)}${extra}`;
   window.open(`https://wa.me/994702153923?text=${msg}`,'_blank');
 }
 
