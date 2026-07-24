@@ -424,6 +424,7 @@
       <a href="#services" data-i18n="nav_services" onclick="closeMenu()">Xidmətlər</a>
       <a href="#restaurant" data-i18n="nav_restaurant" onclick="closeMenu()">Restoran</a>
       <a href="#reservation" data-i18n="nav_reservation" onclick="closeMenu()">Qiymətləri öyrən</a>
+      <a href="#contact" data-i18n="nav_contact" onclick="closeMenu()">Əlaqə</a>
     </nav>
     <div class="nav-right">
       <div class="lang-dd" id="langDd">
@@ -759,11 +760,11 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-/* Всегда открывать/обновлять страницу с самого верха (в т.ч. на мобильных) */
+/* Наверх — только при настоящей загрузке страницы.
+   При возврате из WhatsApp / переключении вкладок позиция сохраняется. */
 if('scrollRestoration' in history){ history.scrollRestoration = 'manual'; }
 window.scrollTo(0,0);
 window.addEventListener('load', () => window.scrollTo(0,0));
-window.addEventListener('pageshow', () => window.scrollTo(0,0));
 
 const CUR = "₼";
 
@@ -786,8 +787,8 @@ const I18N = {
     endirim:"ENDİRİM",resv_pick:"Tarixləri seçin",resv_baddate:"Tarixləri düzgün seçin",gece:"gecə",gun:"gün",total:"Cəmi",resv_bednote:"6+ nəfər üçün kotec-ə əlavə çarpayı (30 ₼) əlavə etmək olar.",ozun_yaz:"Özün yaz",cust_show:"Göstər",combo_label:"Məsləhət",combo_people:"nəfər",combo_note:"Qiymətlər təxminidir (həftə içi). Dəqiq hesablama üçün bizimlə əlaqə saxlayın.",resv_name:"Ad, Soyad",sub_rooms:"Otaqlar",sub_kotecs:"Koteclər",weekday:"Həftə içi",weekend:"Həftə sonu",balcony_yes:"Eyvanlı",balcony_no:"Eyvansız",room_word:"Otaq",price_word:"Qiymət",qeyd_label:"Qeyd",qeyd_text:"<b>Kotec</b> və <b>VİP Kotec</b> otaqlarına da əlavə çarpayı (<b>30 ₼</b>) ilə əlavə nəfər yerləşdirmək olar.<br>Maksimum <b>2 çarpayı</b>.",advice_label:"Məsləhət",advice_text:"Bu qədər qonaq üçün <b>2 ayrı kotec və ya otaq</b> götürə bilərsiniz."
   },
   ru:{
-    nav_home:"Главная",nav_rooms:"Номера",nav_gallery:"Галерея",nav_about:"Об отеле",nav_services:"Услуги",nav_restaurant:"Ресторан",nav_campaigns:"Акции",nav_places:"Что рядом",nav_reservation:"Бронирование",nav_contact:"Контакты",
-    hero_tag:"Отдых и уют в объятиях природы",hero_cta1:"Смотреть номера",hero_cta2:"Забронировать",
+    nav_home:"Главная",nav_rooms:"Номера",nav_gallery:"Галерея",nav_about:"Об отеле",nav_services:"Услуги",nav_restaurant:"Ресторан",nav_campaigns:"Акции",nav_places:"Что рядом",nav_reservation:"Узнать цены",nav_contact:"Контакты",
+    hero_tag:"Отдых и уют в объятиях природы",hero_cta1:"Смотреть номера",hero_cta2:"Узнать цены",
     intro_ey:"Добро пожаловать",intro_title:"Отдых среди гор",intro_text:"Чистый воздух Огуза, открытый бассейн, вкусная кухня и живая музыка каждый вечер — идеальное место для семейного и дружеского отдыха.",
     stat_rooms:"типов номеров",stat_kotec:"коттеджа",stat_service:"сервис",
     rooms_ey:"Размещение",rooms_title:"Номера и цены",rooms_filter:"Выберите число гостей",
@@ -797,13 +798,13 @@ const I18N = {
     rest_ey:"Вкус и уют",rest_title:"Ресторан",rest_text:"Лучшие блюда местной и национальной кухни, свежие продукты и особая атмосфера.",rest_btn:"Меню ресторана",
     camp_ey:"Спецпредложения",camp_title:"Акции",bonus_t:"Бонусная карта",bonus_s:"10% бонусов с каждой оплаты",bonus_s2:"Нажмите для условий",bonus_how:"Как это работает?",bonus_text:"10% каждой оплаты возвращается на бонусную карту. Бонусы накапливаются, и когда собрана нужная сумма — ими можно оплатить следующую ночь.",bonus_cond:"Условие: для использования нужная сумма должна быть собрана полностью.",
     places_ey:"Рядом",places_title:"Что посмотреть в Огузе",place1_t:"Озёра и реки",place1_s:"Природные озёра и прохладные реки.",place2_t:"Кавказские леса",place2_s:"Прогулки и чистый воздух.",place3_t:"Исторические места",place3_s:"Древние памятники Огуза.",
-    resv_ey:"Забронировать",resv_title:"Бронирование",resv_checkin:"Дата заезда",resv_checkout:"Дата выезда",resv_guests:"Число гостей",resv_room:"Выбор номера",resv_btn:"Забронировать через WhatsApp",resv_note:"При нажатии выбранные данные переносятся в WhatsApp.",
+    resv_ey:"Уточнить наличие",resv_title:"Узнать цены",resv_checkin:"Дата заезда",resv_checkout:"Дата выезда",resv_guests:"Число гостей",resv_room:"Выбор номера",resv_btn:"Узнать через WhatsApp!",resv_note:"При нажатии выбранные данные переносятся в WhatsApp.",
     contact_ey:"Свяжитесь с нами",contact_title:"Контакты",contact_phone:"Телефон",contact_call:"Позвонить",contact_addr:"Адрес",contact_addr_val:"Огузский район, ул. С. Газиева, 21",contact_route:"Построить маршрут",contact_maps:"Google Maps",map_hint:"Мы на карте",
     endirim:"СКИДКА",resv_pick:"Выберите даты",resv_baddate:"Проверьте даты",gece:"ночей",gun:"дней",total:"Итого",resv_bednote:"Для 6+ гостей в коттедж можно добавить доп. кровать (30 ₼).",ozun_yaz:"Своё число",cust_show:"Показать",combo_label:"Совет",combo_people:"чел.",combo_note:"Цены примерные (будни). Для точного расчёта свяжитесь с нами.",resv_name:"Имя, Фамилия",sub_rooms:"Номера",sub_kotecs:"Коттеджи",weekday:"Будни",weekend:"Выходные",balcony_yes:"С балконом",balcony_no:"Без балкона",room_word:"Комната",price_word:"Цена",qeyd_label:"Примечание",qeyd_text:"В коттеджи <b>Kotec</b> и <b>VİP Kotec</b> можно добавить доп. кровать (<b>30 ₼</b>) для дополнительного гостя.<br>Максимум <b>2 кровати</b>.",advice_label:"Совет",advice_text:"Для такого числа гостей можно взять <b>2 отдельных коттеджа или номера</b>."
   },
   en:{
-    nav_home:"Home",nav_rooms:"Rooms",nav_gallery:"Gallery",nav_about:"About",nav_services:"Services",nav_restaurant:"Restaurant",nav_campaigns:"Offers",nav_places:"Nearby",nav_reservation:"Reservation",nav_contact:"Contact",
-    hero_tag:"Comfort and leisure surrounded by nature",hero_cta1:"View rooms",hero_cta2:"Book now",
+    nav_home:"Home",nav_rooms:"Rooms",nav_gallery:"Gallery",nav_about:"About",nav_services:"Services",nav_restaurant:"Restaurant",nav_campaigns:"Offers",nav_places:"Nearby",nav_reservation:"Check prices",nav_contact:"Contact",
+    hero_tag:"Comfort and leisure surrounded by nature",hero_cta1:"View rooms",hero_cta2:"Check prices",
     intro_ey:"Welcome",intro_title:"A retreat among the mountains",intro_text:"Oguz's fresh air, an open-air pool, delicious cuisine and live music every evening — the ideal place for family and friends.",
     stat_rooms:"room types",stat_kotec:"cottages",stat_service:"service",
     rooms_ey:"Stay",rooms_title:"Rooms & prices",rooms_filter:"Select number of guests",
@@ -813,7 +814,7 @@ const I18N = {
     rest_ey:"Taste & comfort",rest_title:"Restaurant",rest_text:"The finest local and national dishes, fresh produce and a special atmosphere.",rest_btn:"Restaurant menu",
     camp_ey:"Special offers",camp_title:"Offers",bonus_t:"Bonus Card",bonus_s:"Earn 10% back on every payment",bonus_s2:"Tap for conditions",bonus_how:"How it works",bonus_text:"10% of every payment is returned to your bonus card. Bonuses add up, and once you've collected enough you can pay for your next night with them.",bonus_cond:"Condition: the full amount must be collected to use the bonus.",
     places_ey:"Around",places_title:"Things to see in Oguz",place1_t:"Lakes & rivers",place1_s:"Natural lakes and cool rivers.",place2_t:"Caucasus forests",place2_s:"Walks and fresh air.",place3_t:"Historic sites",place3_s:"Ancient landmarks of Oguz.",
-    resv_ey:"Reserve",resv_title:"Reservation",resv_checkin:"Check-in",resv_checkout:"Check-out",resv_guests:"Guests",resv_room:"Room",resv_btn:"Book via WhatsApp",resv_note:"On tap, your selection is copied into WhatsApp.",
+    resv_ey:"Check availability",resv_title:"Check prices",resv_checkin:"Check-in",resv_checkout:"Check-out",resv_guests:"Guests",resv_room:"Room",resv_btn:"Ask on WhatsApp!",resv_note:"On tap, your selection is copied into WhatsApp.",
     contact_ey:"Get in touch",contact_title:"Contact",contact_phone:"Phone",contact_call:"Call",contact_addr:"Address",contact_addr_val:"Oguz district, S. Gaziyev str. 21",contact_route:"Get directions",contact_maps:"Google Maps",map_hint:"Find us on the map",
     endirim:"DISCOUNT",resv_pick:"Select dates",resv_baddate:"Check the dates",gece:"nights",gun:"days",total:"Total",resv_bednote:"For 6+ guests an extra bed (30 ₼) can be added in a cottage.",ozun_yaz:"Custom",cust_show:"Show",combo_label:"Suggestion",combo_people:"guests",combo_note:"Prices are approximate (weekday). Contact us for an exact quote.",resv_name:"Full name",sub_rooms:"Rooms",sub_kotecs:"Cottages",weekday:"Weekday",weekend:"Weekend",balcony_yes:"Balcony",balcony_no:"No balcony",room_word:"Room",price_word:"Price",qeyd_label:"Note",qeyd_text:"An extra bed (<b>30 ₼</b>) can be added in <b>Kotec</b> and <b>VİP Kotec</b> cottages for an additional guest.<br>Up to <b>2 beds</b>.",advice_label:"Tip",advice_text:"For this many guests you can take <b>2 separate cottages or rooms</b>."
   }
@@ -1214,7 +1215,15 @@ function setGuests(btn){
   guests = btn.dataset.g;
   document.querySelectorAll('#gbtns .gbtn').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
+  // запоминаем, где на экране был блок фильтра, и возвращаем его туда же
+  // (иначе при коротком списке страница «схлопывается» и прыгает вверх)
+  const anchor = document.querySelector('#rooms .filter');
+  const before = anchor ? anchor.getBoundingClientRect().top : null;
   render();
+  if(before !== null){
+    const after = anchor.getBoundingClientRect().top;
+    window.scrollBy(0, after - before);
+  }
 }
 function matches(item){ if(guests==="all") return true; const g=parseInt(guests); return g>=item.min && g<=item.max; }
 function ppRows(w1,w2){ const d=I18N[lang]; return `<div class="pp"><span>${d.weekday}</span><b>${w1} ${CUR}</b></div><div class="pp wknd"><span>${d.weekend}</span><b>${w2} ${CUR}</b></div>`; }
