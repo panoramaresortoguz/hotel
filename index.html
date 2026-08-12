@@ -257,6 +257,23 @@
   .svc h3{font-size:17px;color:var(--pine);margin-bottom:4px}
   .svc p{font-size:12.5px;color:var(--muted)}
   .notes-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:22px}
+  /* УДОБСТВА (Şərait) */
+  .amen-wrap{max-width:880px;margin:34px auto 0}
+  .amen-sub{text-align:center;font-family:'Fraunces',serif;font-size:22px;color:var(--pine);margin-bottom:4px}
+  .amen-cap{text-align:center;font-size:13.5px;color:var(--muted);margin-bottom:22px}
+  .amen-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 22px}
+  .amen{display:flex;align-items:center;gap:12px;padding:11px 14px;background:#fff;border:1px solid var(--line);border-radius:11px;transition:border-color .15s,transform .15s}
+  .amen:hover{border-color:var(--brass);transform:translateY(-1px)}
+  .amen .ai{width:34px;height:34px;flex-shrink:0;border-radius:9px;background:var(--ivory-2);display:flex;align-items:center;justify-content:center}
+  .amen .ai svg{width:19px;height:19px;color:var(--brass);stroke-width:1.7}
+  .amen span{font-size:13.5px;color:var(--ink);line-height:1.25}
+  @media(max-width:720px){
+    .amen-grid{grid-template-columns:1fr 1fr;gap:8px 10px}
+    .amen{padding:9px 10px;gap:9px}
+    .amen span{font-size:12px}
+    .amen .ai{width:30px;height:30px}
+    .amen .ai svg{width:17px;height:17px}
+  }
   .note-pill{font-size:13px;background:#fff;border:1px solid var(--line);padding:8px 16px;border-radius:100px;color:var(--ink)}
   .note-pill b{color:var(--brass)} .note-pill.free b{color:#3f8a52}
 
@@ -577,6 +594,12 @@
       <span class="note-pill"><span data-i18n="svc_bed">Əlavə çarpayı</span> — <b>30 ₼</b></span>
       <span class="note-pill free"><span data-i18n="svc_child">0–5 yaş uşaq (1 nəfər)</span> — <b data-i18n="svc_free">pulsuz</b></span>
     </div>
+
+    <div class="amen-wrap">
+      <div class="amen-sub" data-i18n="amen_title">Şərait</div>
+      <div class="amen-cap" data-i18n="amen_cap">Otaqlarda mövcud olan imkanlar</div>
+      <div class="amen-grid" id="amenGrid"></div>
+    </div>
   </div>
 </section>
 
@@ -784,7 +807,7 @@ const I18N = {
     places_ey:"Ətrafda",places_title:"Oğuzda gəzməli yerlər",place1_t:"Göllər və çaylar",place1_s:"Təbii göllər və sərin çaylar.",place2_t:"Qafqaz meşələri",place2_s:"Piyada gəzintilər və təmiz hava.",place3_t:"Tarixi abidələr",place3_s:"Oğuzun qədim məbədləri.",
     resv_ey:"Yer ayırt",resv_title:"Qiymətləri öyrən",resv_checkin:"Giriş tarixi",resv_checkout:"Çıxış tarixi",resv_guests:"Qonaq sayı",resv_room:"Otaq seçimi",resv_btn:"WhatsApp ilə məlumat əldə et!",resv_note:"Düyməyə basdıqda seçdiyiniz məlumatlar WhatsApp-a köçürülür.",
     contact_ey:"Bizimlə əlaqə",contact_title:"Əlaqə",contact_phone:"Telefon",contact_call:"Zəng et",contact_addr:"Ünvan",contact_addr_val:"Oğuz rayonu, S. Qazıyev küç. 21",contact_route:"Marşrutu aç",contact_maps:"Google Maps",map_hint:"Xəritədə yerimiz",
-    endirim:"ENDİRİM",resv_pick:"Tarixləri seçin",resv_baddate:"Tarixləri düzgün seçin",gece:"gecə",gun:"gün",total:"Cəmi",resv_bednote:"6+ nəfər üçün kotec-ə əlavə çarpayı (30 ₼) əlavə etmək olar.",ozun_yaz:"Özün yaz",cust_show:"Göstər",combo_label:"Məsləhət",combo_people:"nəfər",combo_note:"Qiymətlər təxminidir (həftə içi). Dəqiq hesablama üçün bizimlə əlaqə saxlayın.",resv_name:"Ad, Soyad",sub_rooms:"Otaqlar",sub_kotecs:"Koteclər",weekday:"Həftə içi",weekend:"Həftə sonu",balcony_yes:"Eyvanlı",balcony_no:"Eyvansız",room_word:"Otaq",price_word:"Qiymət",qeyd_label:"Qeyd",qeyd_text:"<b>Kotec</b> və <b>VİP Kotec</b> otaqlarına da əlavə çarpayı (<b>30 ₼</b>) ilə əlavə nəfər yerləşdirmək olar.<br>Maksimum <b>2 çarpayı</b>.",advice_label:"Məsləhət",advice_text:"Bu qədər qonaq üçün <b>2 ayrı kotec və ya otaq</b> götürə bilərsiniz."
+    amen_title:"Şərait",amen_cap:"Otaqlarda mövcud olan imkanlar",endirim:"ENDİRİM",resv_pick:"Tarixləri seçin",resv_baddate:"Tarixləri düzgün seçin",gece:"gecə",gun:"gün",total:"Cəmi",resv_bednote:"6+ nəfər üçün kotec-ə əlavə çarpayı (30 ₼) əlavə etmək olar.",ozun_yaz:"Özün yaz",cust_show:"Göstər",combo_label:"Məsləhət",combo_people:"nəfər",combo_note:"Qiymətlər təxminidir (həftə içi). Dəqiq hesablama üçün bizimlə əlaqə saxlayın.",resv_name:"Ad, Soyad",sub_rooms:"Otaqlar",sub_kotecs:"Koteclər",weekday:"Həftə içi",weekend:"Həftə sonu",balcony_yes:"Eyvanlı",balcony_no:"Eyvansız",room_word:"Otaq",price_word:"Qiymət",qeyd_label:"Qeyd",qeyd_text:"<b>Kotec</b> və <b>VİP Kotec</b> otaqlarına da əlavə çarpayı (<b>30 ₼</b>) ilə əlavə nəfər yerləşdirmək olar.<br>Maksimum <b>2 çarpayı</b>.",advice_label:"Məsləhət",advice_text:"Bu qədər qonaq üçün <b>2 ayrı kotec və ya otaq</b> götürə bilərsiniz."
   },
   ru:{
     nav_home:"Главная",nav_rooms:"Номера",nav_gallery:"Галерея",nav_about:"Об отеле",nav_services:"Услуги",nav_restaurant:"Ресторан",nav_campaigns:"Акции",nav_places:"Что рядом",nav_reservation:"Узнать цены",nav_contact:"Контакты",
@@ -800,7 +823,7 @@ const I18N = {
     places_ey:"Рядом",places_title:"Что посмотреть в Огузе",place1_t:"Озёра и реки",place1_s:"Природные озёра и прохладные реки.",place2_t:"Кавказские леса",place2_s:"Прогулки и чистый воздух.",place3_t:"Исторические места",place3_s:"Древние памятники Огуза.",
     resv_ey:"Уточнить наличие",resv_title:"Узнать цены",resv_checkin:"Дата заезда",resv_checkout:"Дата выезда",resv_guests:"Число гостей",resv_room:"Выбор номера",resv_btn:"Узнать через WhatsApp!",resv_note:"При нажатии выбранные данные переносятся в WhatsApp.",
     contact_ey:"Свяжитесь с нами",contact_title:"Контакты",contact_phone:"Телефон",contact_call:"Позвонить",contact_addr:"Адрес",contact_addr_val:"Огузский район, ул. С. Газиева, 21",contact_route:"Построить маршрут",contact_maps:"Google Maps",map_hint:"Мы на карте",
-    endirim:"СКИДКА",resv_pick:"Выберите даты",resv_baddate:"Проверьте даты",gece:"ночей",gun:"дней",total:"Итого",resv_bednote:"Для 6+ гостей в коттедж можно добавить доп. кровать (30 ₼).",ozun_yaz:"Своё число",cust_show:"Показать",combo_label:"Совет",combo_people:"чел.",combo_note:"Цены примерные (будни). Для точного расчёта свяжитесь с нами.",resv_name:"Имя, Фамилия",sub_rooms:"Номера",sub_kotecs:"Коттеджи",weekday:"Будни",weekend:"Выходные",balcony_yes:"С балконом",balcony_no:"Без балкона",room_word:"Комната",price_word:"Цена",qeyd_label:"Примечание",qeyd_text:"В коттеджи <b>Kotec</b> и <b>VİP Kotec</b> можно добавить доп. кровать (<b>30 ₼</b>) для дополнительного гостя.<br>Максимум <b>2 кровати</b>.",advice_label:"Совет",advice_text:"Для такого числа гостей можно взять <b>2 отдельных коттеджа или номера</b>."
+    amen_title:"Условия",amen_cap:"Что есть в номерах",endirim:"СКИДКА",resv_pick:"Выберите даты",resv_baddate:"Проверьте даты",gece:"ночей",gun:"дней",total:"Итого",resv_bednote:"Для 6+ гостей в коттедж можно добавить доп. кровать (30 ₼).",ozun_yaz:"Своё число",cust_show:"Показать",combo_label:"Совет",combo_people:"чел.",combo_note:"Цены примерные (будни). Для точного расчёта свяжитесь с нами.",resv_name:"Имя, Фамилия",sub_rooms:"Номера",sub_kotecs:"Коттеджи",weekday:"Будни",weekend:"Выходные",balcony_yes:"С балконом",balcony_no:"Без балкона",room_word:"Комната",price_word:"Цена",qeyd_label:"Примечание",qeyd_text:"В коттеджи <b>Kotec</b> и <b>VİP Kotec</b> можно добавить доп. кровать (<b>30 ₼</b>) для дополнительного гостя.<br>Максимум <b>2 кровати</b>.",advice_label:"Совет",advice_text:"Для такого числа гостей можно взять <b>2 отдельных коттеджа или номера</b>."
   },
   en:{
     nav_home:"Home",nav_rooms:"Rooms",nav_gallery:"Gallery",nav_about:"About",nav_services:"Services",nav_restaurant:"Restaurant",nav_campaigns:"Offers",nav_places:"Nearby",nav_reservation:"Check prices",nav_contact:"Contact",
@@ -816,7 +839,7 @@ const I18N = {
     places_ey:"Around",places_title:"Things to see in Oguz",place1_t:"Lakes & rivers",place1_s:"Natural lakes and cool rivers.",place2_t:"Caucasus forests",place2_s:"Walks and fresh air.",place3_t:"Historic sites",place3_s:"Ancient landmarks of Oguz.",
     resv_ey:"Check availability",resv_title:"Check prices",resv_checkin:"Check-in",resv_checkout:"Check-out",resv_guests:"Guests",resv_room:"Room",resv_btn:"Ask on WhatsApp!",resv_note:"On tap, your selection is copied into WhatsApp.",
     contact_ey:"Get in touch",contact_title:"Contact",contact_phone:"Phone",contact_call:"Call",contact_addr:"Address",contact_addr_val:"Oguz district, S. Gaziyev str. 21",contact_route:"Get directions",contact_maps:"Google Maps",map_hint:"Find us on the map",
-    endirim:"DISCOUNT",resv_pick:"Select dates",resv_baddate:"Check the dates",gece:"nights",gun:"days",total:"Total",resv_bednote:"For 6+ guests an extra bed (30 ₼) can be added in a cottage.",ozun_yaz:"Custom",cust_show:"Show",combo_label:"Suggestion",combo_people:"guests",combo_note:"Prices are approximate (weekday). Contact us for an exact quote.",resv_name:"Full name",sub_rooms:"Rooms",sub_kotecs:"Cottages",weekday:"Weekday",weekend:"Weekend",balcony_yes:"Balcony",balcony_no:"No balcony",room_word:"Room",price_word:"Price",qeyd_label:"Note",qeyd_text:"An extra bed (<b>30 ₼</b>) can be added in <b>Kotec</b> and <b>VİP Kotec</b> cottages for an additional guest.<br>Up to <b>2 beds</b>.",advice_label:"Tip",advice_text:"For this many guests you can take <b>2 separate cottages or rooms</b>."
+    amen_title:"Amenities",amen_cap:"Available in the rooms",endirim:"DISCOUNT",resv_pick:"Select dates",resv_baddate:"Check the dates",gece:"nights",gun:"days",total:"Total",resv_bednote:"For 6+ guests an extra bed (30 ₼) can be added in a cottage.",ozun_yaz:"Custom",cust_show:"Show",combo_label:"Suggestion",combo_people:"guests",combo_note:"Prices are approximate (weekday). Contact us for an exact quote.",resv_name:"Full name",sub_rooms:"Rooms",sub_kotecs:"Cottages",weekday:"Weekday",weekend:"Weekend",balcony_yes:"Balcony",balcony_no:"No balcony",room_word:"Room",price_word:"Price",qeyd_label:"Note",qeyd_text:"An extra bed (<b>30 ₼</b>) can be added in <b>Kotec</b> and <b>VİP Kotec</b> cottages for an additional guest.<br>Up to <b>2 beds</b>.",advice_label:"Tip",advice_text:"For this many guests you can take <b>2 separate cottages or rooms</b>."
   }
 };
 let lang = 'az';
@@ -832,6 +855,7 @@ function applyLang(l){
   document.querySelectorAll('.lang-menu button').forEach(b=>b.classList.toggle('on', b.dataset.l===l));
   try{ localStorage.setItem('lang', l); }catch(e){}
   if(typeof render==='function') render();
+  if(typeof renderAmenities==='function') renderAmenities();
   if(typeof updateReservation==='function') updateReservation();
 }
 
@@ -1337,6 +1361,63 @@ function openGallery(id){
 function closeGallery(){ document.getElementById('galleryModal').classList.remove('open'); }
 
 /* старт */
+/* ================= УДОБСТВА (Şərait) ================= */
+const AMEN_ICONS = {
+  dryer:'<path d="M3 5h9a4 4 0 010 8H8l-2 3"/><path d="M8 9h.01"/><path d="M15 5v-.5a2.5 2.5 0 015 0V5"/>',
+  bath:'<path d="M4 12V6a2 2 0 012-2h1a2 2 0 012 2"/><path d="M2 12h20v2a4 4 0 01-4 4H6a4 4 0 01-4-4z"/><path d="M7 22l-1-2M18 22l1-2"/>',
+  heater:'<path d="M12 3v18"/><path d="M8 6a4 4 0 000 6M16 6a4 4 0 010 6"/><path d="M8 15a4 4 0 000 6M16 15a4 4 0 010 6"/>',
+  shampoo:'<rect x="8" y="9" width="8" height="12" rx="2"/><path d="M10 9V6a2 2 0 012-2h0a2 2 0 012 2v3"/><path d="M10 3h4"/>',
+  hotwater:'<path d="M12 2s5 5.5 5 9a5 5 0 01-10 0c0-3.5 5-9 5-9z"/>',
+  shower:'<path d="M4 4h6a4 4 0 014 4v2"/><path d="M14 10H4"/><path d="M7 14v.01M10 14v.01M13 14v.01M7 17v.01M10 17v.01M13 17v.01M7 20v.01M10 20v.01M13 20v.01"/>',
+  soap:'<rect x="6" y="10" width="12" height="10" rx="2"/><path d="M9 10V7a3 3 0 016 0v3"/><path d="M9 15h6"/>',
+  gel:'<rect x="8" y="8" width="8" height="13" rx="2"/><path d="M9 8V5a2 2 0 012-2h2a2 2 0 012 2v3"/><path d="M13 3l2-1"/>',
+  sheets:'<path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v6l9 4 9-4V7"/>',
+  toilet:'<rect x="7" y="4" width="10" height="7" rx="2"/><path d="M9 11v6a3 3 0 003 3h0a3 3 0 003-3v-6"/><path d="M12 20v2"/>',
+  pillow:'<rect x="3" y="7" width="18" height="10" rx="3"/><path d="M7 7v10M17 7v10"/>',
+  hanger:'<path d="M12 4a2 2 0 00-1 3.7L12 9l9 5.5a1.5 1.5 0 01-.8 2.8H3.8A1.5 1.5 0 013 14.5L12 9"/>',
+  towel:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3v18"/><path d="M13 8h3M13 11h3"/>',
+  wardrobe:'<rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M12 3v18"/><path d="M10 11v2M14 11v2"/>',
+  curtain:'<path d="M3 3h18"/><path d="M5 3c0 8-1 12-2 18M9 3c0 8 .5 12 0 18M15 3c0 8-.5 12 0 18M19 3c0 8 1 12 2 18"/>',
+  bedset:'<path d="M3 18v-6a2 2 0 012-2h14a2 2 0 012 2v6"/><path d="M3 14h18"/><path d="M6 10V8a2 2 0 012-2h8a2 2 0 012 2v2"/><path d="M3 18v2M21 18v2"/>',
+  fridge:'<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M6 10h12"/><path d="M9 5v2M9 13v3"/>',
+  kettle:'<path d="M6 10h11l-1 8a2 2 0 01-2 2H9a2 2 0 01-2-2l-1-8z"/><path d="M17 12h2a2 2 0 000-4h-2"/><path d="M9 10V8a3 3 0 016 0v2"/>',
+  napkin:'<rect x="5" y="5" width="14" height="14" rx="1"/><path d="M9 9h6M9 12h6M9 15h4"/>',
+  wineglass:'<path d="M8 3h8l-1 6a3 3 0 01-6 0L8 3z"/><path d="M12 12v6"/><path d="M8 21h8"/>',
+  table:'<path d="M3 9h18"/><path d="M5 9v11M19 9v11"/><path d="M4 6h16v3H4z"/>',
+  parking:'<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 17V7h4a3 3 0 010 6H9"/>'
+};
+const AMENITIES = [
+  {ic:'dryer',   az:'Saç qurudan',            ru:'Фен',                         en:'Hair dryer'},
+  {ic:'bath',    az:'Hamam ləvazimatları',    ru:'Банные принадлежности',       en:'Bathroom essentials'},
+  {ic:'heater',  az:'İsidici',                ru:'Обогреватель',                en:'Heating'},
+  {ic:'shampoo', az:'Şampun',                 ru:'Шампунь',                     en:'Shampoo'},
+  {ic:'hotwater',az:'İsti su',                ru:'Горячая вода',                en:'Hot water'},
+  {ic:'shower',  az:'Duş kabini',             ru:'Душевая кабина',              en:'Shower'},
+  {ic:'soap',    az:'Sabun',                  ru:'Мыло',                        en:'Soap'},
+  {ic:'gel',     az:'Duş geli',               ru:'Гель для душа',               en:'Shower gel'},
+  {ic:'sheets',  az:'Mələfələr',              ru:'Постельное бельё',            en:'Bed linen'},
+  {ic:'toilet',  az:'Tualet kağızı',          ru:'Туалетная бумага',            en:'Toilet paper'},
+  {ic:'pillow',  az:'Əlavə yastıq və ədyallar',ru:'Доп. подушки и одеяла',      en:'Extra pillows & blankets'},
+  {ic:'hanger',  az:'Asılqan',                ru:'Вешалки',                     en:'Hangers'},
+  {ic:'towel',   az:'Dəsmallar',              ru:'Полотенца',                   en:'Towels'},
+  {ic:'wardrobe',az:'Geyim dolabı',           ru:'Шкаф для одежды',             en:'Wardrobe'},
+  {ic:'curtain', az:'Qaranlıqlaşdıran pərdələr',ru:'Плотные шторы',             en:'Blackout curtains'},
+  {ic:'bedset',  az:'Yataq dəsti',            ru:'Спальный комплект',           en:'Bed set'},
+  {ic:'fridge',  az:'Soyuducu',               ru:'Холодильник',                 en:'Refrigerator'},
+  {ic:'kettle',  az:'Elektrik çaydan',        ru:'Электрочайник',               en:'Electric kettle'},
+  {ic:'napkin',  az:'Mətbəx solfeti',         ru:'Кухонные салфетки',           en:'Kitchen napkins'},
+  {ic:'wineglass',az:'Şərab stəkanları',      ru:'Бокалы для вина',             en:'Wine glasses'},
+  {ic:'table',   az:'Yemək masası',           ru:'Обеденный стол',              en:'Dining table'},
+  {ic:'parking', az:'Ödənişsiz parkinq',      ru:'Бесплатная парковка',         en:'Free parking'}
+];
+function renderAmenities(){
+  const grid = document.getElementById('amenGrid');
+  if(!grid) return;
+  grid.innerHTML = AMENITIES.map(a=>
+    `<div class="amen"><div class="ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${AMEN_ICONS[a.ic]}</svg></div><span>${a[lang]||a.az}</span></div>`
+  ).join('');
+}
+
 (function init(){
   fillRoomSelect();
   let l='az';
