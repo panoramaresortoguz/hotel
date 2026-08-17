@@ -1004,42 +1004,38 @@ function nextSlide(){ if(slideEls.length<2) return; showSlide((slideIdx+1)%slide
 function prevSlide(){ if(slideEls.length<2) return; showSlide((slideIdx-1+slideEls.length)%slideEls.length); resetTimer(); }
 function goSlide(i){ showSlide(i); resetTimer(); }
 function resetTimer(){ clearInterval(slideTimer); if(slideEls.length>1) slideTimer = setInterval(()=>showSlide((slideIdx+1)%slideEls.length), 3000); }
+
+/* Тихо проверяет, есть ли файл (без ошибки 404 в консоли).
+   HEAD-запрос не тянет само изображение и не «краснит» консоль. */
+function imgExists(url){
+  return fetch(url, {method:'HEAD'}).then(r=>r.ok).catch(()=>false);
+}
+
 (function buildSlider(){
   function addSlide(src){
     const s=document.createElement('div'); s.className='slide'; s.style.backgroundImage=`url('${src}')`;
     if(!slideEls.length) s.classList.add('on');
     slidesBox.appendChild(s); const idx=slideEls.length; slideEls.push(s);
     const d=document.createElement('i'); if(!idx) d.className='on'; d.onclick=()=>goSlide(idx); dotsBox.appendChild(d);
-    if(slideEls.length===2){ resetTimer(); } // как только появился 2-й слайд — запускаем автопрокрутку
+    if(slideEls.length===2){ resetTimer(); }
   }
   function finalize(){
     if(!slideEls.length){ const s=document.createElement('div'); s.className='slide s1 on'; slidesBox.appendChild(s); slideEls.push(s); }
     if(slideEls.length<2){ document.querySelectorAll('.hero-arrow').forEach(a=>a.style.display='none'); dotsBox.style.display='none'; }
-    // очередь: слайдер готов → фото комнат → галерея → ресторан
-    wirePhotoButtons(loadGallery);
+    wirePhotoButtons(loadGallery);   // очередь: слайдер → комнаты → галерея → ресторан
   }
-
-  // Запускаем загрузку ВСЕХ фото параллельно, но добавляем слайды по порядку (1,2,3…),
-  // как только очередной по счёту файл определился (загрузился или отсутствует).
-  const results = new Array(MAX_SLIDES + 1); // results[n] = {status:'loaded'|'missing', src}
-  let flushed = 1; // следующий номер, который нужно добавить по порядку
-  let settledCount = 0;
-
-  function flush(){
-    while(results[flushed] !== undefined){
-      const r = results[flushed];
-      if(r.status === 'loaded') addSlide(r.src);
-      flushed++;
-    }
-    if(settledCount === MAX_SLIDES) finalize();
+  // грузим по порядку 1,2,3… и останавливаемся на первом отсутствующем — без ошибок 404
+  function next(n){
+    if(n > MAX_SLIDES){ finalize(); return; }
+    imgExists(`slider/slider-${n}.jpg`).then(ok=>{
+      if(!ok){ finalize(); return; }
+      const img = new Image();
+      img.onload = () => { addSlide(img.src); next(n+1); };
+      img.onerror = () => finalize();
+      img.src = `slider/slider-${n}.jpg`;
+    });
   }
-
-  for(let n = 1; n <= MAX_SLIDES; n++){
-    const img = new Image();
-    img.onload = () => { results[n] = {status:'loaded', src: img.src}; settledCount++; flush(); };
-    img.onerror = () => { results[n] = {status:'missing'}; settledCount++; flush(); };
-    img.src = `slider/slider-${n}.jpg`; // ← фото из папки slider (по порядку 1,2,3…)
-  }
+  next(1);
 })();
 
 /* ================= МИНИ-СЛАЙДЕР РЕСТОРАНА (jpg/png, до 20 фото) ================= */
@@ -1048,7 +1044,6 @@ function buildRestSlider(){
   const dotsBox = document.getElementById('restDots');
   if(!box) return;
   const MAX_REST = 20;
-  const EXTS = ['jpg','png'];
   let els = [], idx = 0, timer;
 
   function show(i){
@@ -1072,29 +1067,25 @@ function buildRestSlider(){
     if(els.length<2){ document.querySelectorAll('.rest-card .rest-arrow').forEach(a=>a.style.display='none'); dotsBox.style.display='none'; }
   }
 
-  // Пробуем jpg, потом png для одного номера
+  // Тихо проверяем jpg, потом png (без 404 в консоли)
   function loadOne(n, cb){
-    let i = 0;
-    function tryExt(){
-      if(i>=EXTS.length){ cb(null); return; }
+    imgExists(`restoran/restoran-${n}.jpg`).then(ok=>{
+      if(ok){ cb(`restoran/restoran-${n}.jpg`); return; }
+      imgExists(`restoran/restoran-${n}.png`).then(ok2=> cb(ok2 ? `restoran/restoran-${n}.png` : null));
+    });
+  }
+  // грузим по порядку и останавливаемся на первом отсутствующем
+  function next(n){
+    if(n > MAX_REST){ finalize(); return; }
+    loadOne(n, (src)=>{
+      if(!src){ finalize(); return; }
       const img = new Image();
-      img.onload = () => cb(img.src);
-      img.onerror = () => { i++; tryExt(); };
-      img.src = `restoran/restoran-${n}.${EXTS[i]}`;
-    }
-    tryExt();
+      img.onload = () => { addSlide(src); next(n+1); };
+      img.onerror = () => finalize();
+      img.src = src;
+    });
   }
-
-  // Грузим все номера параллельно, добавляем строго по порядку
-  const results = new Array(MAX_REST + 1);
-  let flushed = 1, settled = 0;
-  function flush(){
-    while(results[flushed] !== undefined){ if(results[flushed]) addSlide(results[flushed]); flushed++; }
-    if(settled === MAX_REST) finalize();
-  }
-  for(let n=1; n<=MAX_REST; n++){
-    loadOne(n, (src) => { results[n] = src; settled++; flush(); });
-  }
+  next(1);
 }
 
 /* ================= ФОТОГАЛЕРЕЯ ================= */
@@ -1121,21 +1112,24 @@ function loadGallery(){
   // и не забивает канал параллельными запросами (важно для мобильного интернета)
   function loadNext(i){
     if(i > GAL_MAX){ finalizeGallery(); buildRestSlider(); return; }
-    const img = new Image();
-    img.decoding = 'async';
-    img.alt = 'Panorama Resort Oğuz';
-    img.onload = () => {
-      const d = document.createElement('div'); d.className='gph';
-      img.classList.add('loaded');
-      d.onclick = () => openLightbox(img.src);
-      d.appendChild(img);
-      grid.appendChild(d);
-      empty.style.display='none';
-      if(grid.children.length === 1) resetGalTimer();
-      loadNext(i+1);
-    };
-    img.onerror = () => { finalizeGallery(); buildRestSlider(); };  // дальше файлов нет → грузим ресторан
-    img.src = `qalereya/qalereya-${i}.jpg`;
+    imgExists(`qalereya/qalereya-${i}.jpg`).then(ok=>{
+      if(!ok){ finalizeGallery(); buildRestSlider(); return; }  // дальше файлов нет
+      const img = new Image();
+      img.decoding = 'async';
+      img.alt = 'Panorama Resort Oğuz';
+      img.onload = () => {
+        const d = document.createElement('div'); d.className='gph';
+        img.classList.add('loaded');
+        d.onclick = () => openLightbox(img.src);
+        d.appendChild(img);
+        grid.appendChild(d);
+        empty.style.display='none';
+        if(grid.children.length === 1) resetGalTimer();
+        loadNext(i+1);
+      };
+      img.onerror = () => { finalizeGallery(); buildRestSlider(); };
+      img.src = `qalereya/qalereya-${i}.jpg`;
+    });
   }
   loadNext(1);
 }
@@ -1313,15 +1307,14 @@ function wirePhotoButtons(done){
                 : (item&&item.nums)? item.nums.split(',').map(s=>'otaq-'+s.trim()) : [id];
     bases.forEach(base=>{
       left++;
-      const p = new Image();
       const settle = () => { if(--left === 0) finish(); };
-      p.onload = () => {
-        photoCache[id] = true;
-        document.querySelectorAll('.shot-btn[data-id="'+id+'"]').forEach(b=>b.style.display='');
+      imgExists('photos/'+base+'-1.jpg').then(ok=>{
+        if(ok){
+          photoCache[id] = true;
+          document.querySelectorAll('.shot-btn[data-id="'+id+'"]').forEach(b=>b.style.display='');
+        }
         settle();
-      };
-      p.onerror = settle;
-      p.src = 'photos/'+base+'-1.jpg';
+      });
     });
   });
   if(left === 0) finish();
@@ -1339,22 +1332,25 @@ function openGallery(id){
   else if(item && item.nums) item.nums.split(',').map(s=>s.trim()).forEach(n=>units.push({base:'otaq-'+n,label:'Otaq '+n}));
   else if(item) units.push({base:item.id,label:item.no||item.name});
   units.forEach((u,ui)=>{
-    // грузим по порядку 1,2,3… и останавливаемся, когда файла больше нет
+    // грузим по порядку 1,2,3… и останавливаемся, когда файла больше нет (без 404)
     (function next(i){
       if(i > MAX_PHOTOS) return;
-      const img = new Image();
-      img.onload = () => {
-        const a=document.createElement('div'); a.className='gph';
-        a.style.order=ui*100+i; a.style.cursor='zoom-in'; a.style.aspectRatio='1 / 1'; a.style.overflow='hidden';
-        img.style.width='100%'; img.style.height='100%'; img.style.objectFit='cover';
-        a.onclick=()=>openLightbox(img.src);
-        const cap=document.createElement('span'); cap.className='cap'; cap.textContent=u.label;
-        a.appendChild(img); a.appendChild(cap); grid.appendChild(a);
-        empty.style.display='none';
+      const url = 'photos/'+u.base+'-'+i+'.jpg';
+      imgExists(url).then(ok=>{
+        if(!ok) return;
+        const img = new Image();
+        img.onload = () => {
+          const a=document.createElement('div'); a.className='gph';
+          a.style.order=ui*100+i; a.style.cursor='zoom-in'; a.style.aspectRatio='1 / 1'; a.style.overflow='hidden';
+          img.style.width='100%'; img.style.height='100%'; img.style.objectFit='cover';
+          a.onclick=()=>openLightbox(img.src);
+          const cap=document.createElement('span'); cap.className='cap'; cap.textContent=u.label;
+          a.appendChild(img); a.appendChild(cap); grid.appendChild(a);
+          empty.style.display='none';
+        };
+        img.src = url;
         next(i+1);
-      };
-      img.onerror = () => {};   // фото нет — дальше не ищем
-      img.src = 'photos/'+u.base+'-'+i+'.jpg';
+      });
     })(1);
   });
 }
