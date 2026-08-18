@@ -993,7 +993,6 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
 /* ================= СЛАЙДЕР (авто, до 10 фото) ================= */
 const slidesBox = document.getElementById('slides');
 const dotsBox = document.getElementById('dots');
-const MAX_SLIDES = 10;
 let slideEls = [], slideIdx = 0, slideTimer;
 function showSlide(i){
   slideEls.forEach((s,n)=>s.classList.toggle('on', n===i));
@@ -1005,11 +1004,13 @@ function prevSlide(){ if(slideEls.length<2) return; showSlide((slideIdx-1+slideE
 function goSlide(i){ showSlide(i); resetTimer(); }
 function resetTimer(){ clearInterval(slideTimer); if(slideEls.length>1) slideTimer = setInterval(()=>showSlide((slideIdx+1)%slideEls.length), 3000); }
 
-/* Тихо проверяет, есть ли файл (без ошибки 404 в консоли).
-   HEAD-запрос не тянет само изображение и не «краснит» консоль. */
-function imgExists(url){
-  return fetch(url, {method:'HEAD'}).then(r=>r.ok).catch(()=>false);
-}
+/* ==================================================================
+   КОЛИЧЕСТВО ФОТО В ПАПКАХ — меняйте эти числа при добавлении фото.
+   Сайт грузит ровно столько, сколько указано (без лишних запросов).
+   ================================================================== */
+const SLIDER_COUNT   = 3;   // папка slider/     (slider-1.jpg … slider-N.jpg)
+const GALLERY_COUNT  = 6;   // папка qalereya/   (qalereya-1.jpg … qalereya-N.jpg)
+const RESTORAN_COUNT = 4;   // папка restoran/   (restoran-1.jpg … restoran-N.jpg)
 
 (function buildSlider(){
   function addSlide(src){
@@ -1024,16 +1025,12 @@ function imgExists(url){
     if(slideEls.length<2){ document.querySelectorAll('.hero-arrow').forEach(a=>a.style.display='none'); dotsBox.style.display='none'; }
     wirePhotoButtons(loadGallery);   // очередь: слайдер → комнаты → галерея → ресторан
   }
-  // грузим по порядку 1,2,3… и останавливаемся на первом отсутствующем — без ошибок 404
   function next(n){
-    if(n > MAX_SLIDES){ finalize(); return; }
-    imgExists(`slider/slider-${n}.jpg`).then(ok=>{
-      if(!ok){ finalize(); return; }
-      const img = new Image();
-      img.onload = () => { addSlide(img.src); next(n+1); };
-      img.onerror = () => finalize();
-      img.src = `slider/slider-${n}.jpg`;
-    });
+    if(n > SLIDER_COUNT){ finalize(); return; }
+    const img = new Image();
+    img.onload = () => { addSlide(img.src); next(n+1); };
+    img.onerror = () => next(n+1);
+    img.src = `slider/slider-${n}.jpg`;
   }
   next(1);
 })();
@@ -1043,7 +1040,7 @@ function buildRestSlider(){
   const box = document.getElementById('restSlides');
   const dotsBox = document.getElementById('restDots');
   if(!box) return;
-  const MAX_REST = 20;
+  const MAX_REST = RESTORAN_COUNT;
   let els = [], idx = 0, timer;
 
   function show(i){
@@ -1067,23 +1064,18 @@ function buildRestSlider(){
     if(els.length<2){ document.querySelectorAll('.rest-card .rest-arrow').forEach(a=>a.style.display='none'); dotsBox.style.display='none'; }
   }
 
-  // Тихо проверяем jpg, потом png (без 404 в консоли)
-  function loadOne(n, cb){
-    imgExists(`restoran/restoran-${n}.jpg`).then(ok=>{
-      if(ok){ cb(`restoran/restoran-${n}.jpg`); return; }
-      imgExists(`restoran/restoran-${n}.png`).then(ok2=> cb(ok2 ? `restoran/restoran-${n}.png` : null));
-    });
-  }
-  // грузим по порядку и останавливаемся на первом отсутствующем
+  // грузим по порядку до RESTORAN_COUNT (jpg, при отсутствии — пробуем png)
   function next(n){
     if(n > MAX_REST){ finalize(); return; }
-    loadOne(n, (src)=>{
-      if(!src){ finalize(); return; }
-      const img = new Image();
-      img.onload = () => { addSlide(src); next(n+1); };
-      img.onerror = () => finalize();
-      img.src = src;
-    });
+    const img = new Image();
+    img.onload = () => { addSlide(img.src); next(n+1); };
+    img.onerror = () => {
+      const png = new Image();
+      png.onload = () => { addSlide(png.src); next(n+1); };
+      png.onerror = () => next(n+1);
+      png.src = `restoran/restoran-${n}.png`;
+    };
+    img.src = `restoran/restoran-${n}.jpg`;
   }
   next(1);
 }
@@ -1092,7 +1084,7 @@ function buildRestSlider(){
 function loadGallery(){
   const grid = document.getElementById('galGrid');
   const empty = document.getElementById('galEmpty');
-  const GAL_MAX = 16;
+  const GAL_MAX = GALLERY_COUNT;
   function finalizeGallery(){
     const real = Array.from(grid.children);
     if(!real.length) return;
@@ -1112,24 +1104,21 @@ function loadGallery(){
   // и не забивает канал параллельными запросами (важно для мобильного интернета)
   function loadNext(i){
     if(i > GAL_MAX){ finalizeGallery(); buildRestSlider(); return; }
-    imgExists(`qalereya/qalereya-${i}.jpg`).then(ok=>{
-      if(!ok){ finalizeGallery(); buildRestSlider(); return; }  // дальше файлов нет
-      const img = new Image();
-      img.decoding = 'async';
-      img.alt = 'Panorama Resort Oğuz';
-      img.onload = () => {
-        const d = document.createElement('div'); d.className='gph';
-        img.classList.add('loaded');
-        d.onclick = () => openLightbox(img.src);
-        d.appendChild(img);
-        grid.appendChild(d);
-        empty.style.display='none';
-        if(grid.children.length === 1) resetGalTimer();
-        loadNext(i+1);
-      };
-      img.onerror = () => { finalizeGallery(); buildRestSlider(); };
-      img.src = `qalereya/qalereya-${i}.jpg`;
-    });
+    const img = new Image();
+    img.decoding = 'async';
+    img.alt = 'Panorama Resort Oğuz';
+    img.onload = () => {
+      const d = document.createElement('div'); d.className='gph';
+      img.classList.add('loaded');
+      d.onclick = () => openLightbox(img.src);
+      d.appendChild(img);
+      grid.appendChild(d);
+      empty.style.display='none';
+      if(grid.children.length === 1) resetGalTimer();
+      loadNext(i+1);
+    };
+    img.onerror = () => loadNext(i+1);
+    img.src = `qalereya/qalereya-${i}.jpg`;
   }
   loadNext(1);
 }
@@ -1217,13 +1206,14 @@ const ROOMS = [
   { id:"luks-genis", name:"Lüks otaq · geniş", nums:"11, 13, 16, 17, 18, 20", cap:"2 nəfər", min:2, max:2, balcony:true, note:"11, 13, 16 — 2 tək · 17, 18, 20 — 1 cüt", wkdy:120, wknd:140,
     photoGroups:[ {base:"otaq-11", label:"Otaq 11, 13, 16"}, {base:"otaq-17", label:"Otaq 17, 18, 20"} ] },
   { id:"Double-21-22", name:"Double otaq", nums:"21, 22", cap:"2 nəfər", min:2, max:2, balcony:false, note:"21 — 1 cüt · 22 — 2 tək", wkdy:120, wknd:140 },
-  { id:"Double-genis", name:"Double · geniş", nums:"14, 19", balcony:true, min:2, max:3, note:"1 cüt + 1 divan",
-    photoGroups:[ {base:"otaq-14", label:"Otaq 14, 19"} ],
+  { id:"Double-genis", name:"Double · geniş", nums:"19", balcony:true, min:2, max:3, note:"1 cüt + 1 divan",
+    photoGroups:[ {base:"otaq-19", label:"Otaq 19"} ],
     tiers:[ {cap:"2 nəfər", min:2, max:2, wkdy:150, wknd:170}, {cap:"3 nəfər", min:3, max:3, wkdy:170, wknd:190} ] },
   { id:"luks", name:"Lüks otaq", nums:"9, 10, 23, 27", cap:"3 nəfər", min:3, max:3, balcony:false, note:"1 cüt + 1 tək", wkdy:150, wknd:170,
     photoGroups:[ {base:"otaq-9", label:"Otaq 9, 10"}, {base:"otaq-23", label:"Otaq 23, 27"} ] },
   { id:"luks15", name:"Lüks otaq", nums:"15", cap:"4 nəfər", min:4, max:4, balcony:true, note:"1 otaqda: 1 cüt + 2 ayrı", wkdy:180, wknd:200 },
-  { id:"Double12", name:"Double · geniş", nums:"12", cap:"4 nəfər", min:4, max:4, balcony:true, note:"1 cüt + 2 ayrı", wkdy:200, wknd:220 },
+  { id:"Double12", name:"Double · geniş", nums:"12, 14", cap:"4 nəfər", min:4, max:4, balcony:true, note:"1 cüt + 2 ayrı", wkdy:200, wknd:220,
+    photoGroups:[ {base:"otaq-12", label:"Otaq 12, 14"} ] },
 ];
 
 /* выбор номера заполняется функцией fillRoomSelect() при старте */
@@ -1307,14 +1297,15 @@ function wirePhotoButtons(done){
                 : (item&&item.nums)? item.nums.split(',').map(s=>'otaq-'+s.trim()) : [id];
     bases.forEach(base=>{
       left++;
+      const p = new Image();
       const settle = () => { if(--left === 0) finish(); };
-      imgExists('photos/'+base+'-1.jpg').then(ok=>{
-        if(ok){
-          photoCache[id] = true;
-          document.querySelectorAll('.shot-btn[data-id="'+id+'"]').forEach(b=>b.style.display='');
-        }
+      p.onload = () => {
+        photoCache[id] = true;
+        document.querySelectorAll('.shot-btn[data-id="'+id+'"]').forEach(b=>b.style.display='');
         settle();
-      });
+      };
+      p.onerror = settle;
+      p.src = 'photos/'+base+'-1.jpg';
     });
   });
   if(left === 0) finish();
@@ -1332,25 +1323,22 @@ function openGallery(id){
   else if(item && item.nums) item.nums.split(',').map(s=>s.trim()).forEach(n=>units.push({base:'otaq-'+n,label:'Otaq '+n}));
   else if(item) units.push({base:item.id,label:item.no||item.name});
   units.forEach((u,ui)=>{
-    // грузим по порядку 1,2,3… и останавливаемся, когда файла больше нет (без 404)
+    // грузим по порядку 1,2,3… и останавливаемся, когда файла больше нет
     (function next(i){
       if(i > MAX_PHOTOS) return;
-      const url = 'photos/'+u.base+'-'+i+'.jpg';
-      imgExists(url).then(ok=>{
-        if(!ok) return;
-        const img = new Image();
-        img.onload = () => {
-          const a=document.createElement('div'); a.className='gph';
-          a.style.order=ui*100+i; a.style.cursor='zoom-in'; a.style.aspectRatio='1 / 1'; a.style.overflow='hidden';
-          img.style.width='100%'; img.style.height='100%'; img.style.objectFit='cover';
-          a.onclick=()=>openLightbox(img.src);
-          const cap=document.createElement('span'); cap.className='cap'; cap.textContent=u.label;
-          a.appendChild(img); a.appendChild(cap); grid.appendChild(a);
-          empty.style.display='none';
-        };
-        img.src = url;
+      const img = new Image();
+      img.onload = () => {
+        const a=document.createElement('div'); a.className='gph';
+        a.style.order=ui*100+i; a.style.cursor='zoom-in'; a.style.aspectRatio='1 / 1'; a.style.overflow='hidden';
+        img.style.width='100%'; img.style.height='100%'; img.style.objectFit='cover';
+        a.onclick=()=>openLightbox(img.src);
+        const cap=document.createElement('span'); cap.className='cap'; cap.textContent=u.label;
+        a.appendChild(img); a.appendChild(cap); grid.appendChild(a);
+        empty.style.display='none';
         next(i+1);
-      });
+      };
+      img.onerror = () => {};   // фото нет — дальше не ищем
+      img.src = 'photos/'+u.base+'-'+i+'.jpg';
     })(1);
   });
 }
