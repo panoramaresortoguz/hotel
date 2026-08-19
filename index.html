@@ -192,7 +192,22 @@
   .subsec{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--brass);font-weight:700;margin:26px 0 14px}
   .room-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
   .kotec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-  .kotec,.room{background:#fff;border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column}
+  .kotec,.room{background:#fff;border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column;position:relative}
+  .heart{position:absolute;top:12px;right:12px;z-index:2;width:34px;height:34px;border-radius:50%;border:none;background:rgba(255,255,255,.9);color:#C1553F;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.12);transition:transform .15s,background .15s}
+  .heart:hover{transform:scale(1.1)}
+  .heart.on{background:#C1553F;color:#fff}
+  .heart svg{width:18px;height:18px}
+  .kotec .heart{background:rgba(255,255,255,.92)}
+  .fav-filter{display:inline-flex;align-items:center;gap:6px}
+  .fav-filter svg{width:15px;height:15px}
+  .fav-filter.on{background:#C1553F !important;color:#fff !important;border-color:#C1553F !important}
+  .fav-empty{text-align:center;color:var(--muted);font-size:15px;padding:34px 10px}
+  /* плавное появление блоков при прокрутке */
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){ .reveal{opacity:1 !important;transform:none !important;transition:none} }
+  .r-head{padding-right:38px}
+  .kotec-top{padding-right:38px}
   .room{padding:16px 18px;gap:9px}
   .kotec{overflow:hidden}
   .kotec.feature{border-color:var(--brass);box-shadow:0 0 0 1px var(--brass)}
@@ -527,6 +542,7 @@
         <button class="gbtn" data-g="6" onclick="setGuests(this)">6</button>
         <button class="gbtn" data-g="8" onclick="setGuests(this)">8</button>
         <button class="gbtn" data-g="10" onclick="setGuests(this)">10</button>
+        <button class="gbtn fav-filter" id="favFilterBtn" onclick="toggleFavFilter()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 21s-7-4.35-9.5-8.5C.5 8.5 3 5 6.5 5 9 5 11 7 12 8.5 13 7 15 5 17.5 5 21 5 23.5 8.5 21.5 12.5 19 16.65 12 21 12 21z"/></svg><span data-i18n="fav_only">Yalnız istəklərim</span></button>
       </div>
     </div>
     <div id="roomSection">
@@ -817,7 +833,7 @@ const I18N = {
     places_ey:"Ətrafda",places_title:"Oğuzda gəzməli yerlər",place1_t:"Göllər və çaylar",place1_s:"Təbii göllər və sərin çaylar.",place2_t:"Qafqaz meşələri",place2_s:"Piyada gəzintilər və təmiz hava.",place3_t:"Tarixi abidələr",place3_s:"Oğuzun qədim məbədləri.",
     resv_ey:"Yer ayırt",resv_title:"Qiymətləri öyrən",resv_checkin:"Giriş tarixi",resv_checkout:"Çıxış tarixi",resv_guests:"Qonaq sayı",resv_room:"Otaq seçimi",resv_btn:"WhatsApp ilə məlumat əldə et!",resv_note:"Düyməyə basdıqda seçdiyiniz məlumatlar WhatsApp-a köçürülür.",
     contact_ey:"Bizimlə əlaqə",contact_title:"Əlaqə",contact_phone:"Telefon",contact_call:"Zəng et",contact_addr:"Ünvan",contact_addr_val:"Oğuz rayonu, S. Qazıyev küç. 21",contact_route:"Marşrutu aç",contact_maps:"Google Maps",map_hint:"Xəritədə yerimiz",
-    select_btn:"Bu otağı seç",weekend_btn:"Yaxın həftəsonunu seç",amen_title:"Şərait",amen_cap:"Otaqlarda mövcud olan imkanlar",endirim:"ENDİRİM",resv_pick:"Tarixləri seçin",resv_baddate:"Tarixləri düzgün seçin",gece:"gecə",gun:"gün",total:"Cəmi",resv_bednote:"6+ nəfər üçün kotec-ə əlavə çarpayı (30 ₼) əlavə etmək olar.",ozun_yaz:"Özün yaz",cust_show:"Göstər",combo_label:"Məsləhət",combo_people:"nəfər",combo_note:"Qiymətlər təxminidir (həftə içi). Dəqiq hesablama üçün bizimlə əlaqə saxlayın.",resv_name:"Ad, Soyad",sub_rooms:"Otaqlar",sub_kotecs:"Koteclər",weekday:"Həftə içi",weekend:"Həftə sonu",balcony_yes:"Eyvanlı",balcony_no:"Eyvansız",room_word:"Otaq",price_word:"Qiymət",qeyd_label:"Qeyd",qeyd_text:"<b>Kotec</b> və <b>VİP Kotec</b> otaqlarına da əlavə çarpayı (<b>30 ₼</b>) ilə əlavə nəfər yerləşdirmək olar.<br>Maksimum <b>2 çarpayı</b>.",advice_label:"Məsləhət",advice_text:"Bu qədər qonaq üçün <b>2 ayrı kotec və ya otaq</b> götürə bilərsiniz."
+    select_btn:"Bu otağı seç",fav_only:"Yalnız istəklərim",fav_empty:"Hələ heç bir otaq seçməmisiniz. Ürək düyməsinə toxunun.",weekend_btn:"Yaxın həftəsonunu seç",amen_title:"Şərait",amen_cap:"Otaqlarda mövcud olan imkanlar",endirim:"ENDİRİM",resv_pick:"Tarixləri seçin",resv_baddate:"Tarixləri düzgün seçin",gece:"gecə",gun:"gün",total:"Cəmi",resv_bednote:"6+ nəfər üçün kotec-ə əlavə çarpayı (30 ₼) əlavə etmək olar.",ozun_yaz:"Özün yaz",cust_show:"Göstər",combo_label:"Məsləhət",combo_people:"nəfər",combo_note:"Qiymətlər təxminidir (həftə içi). Dəqiq hesablama üçün bizimlə əlaqə saxlayın.",resv_name:"Ad, Soyad",sub_rooms:"Otaqlar",sub_kotecs:"Koteclər",weekday:"Həftə içi",weekend:"Həftə sonu",balcony_yes:"Eyvanlı",balcony_no:"Eyvansız",room_word:"Otaq",price_word:"Qiymət",qeyd_label:"Qeyd",qeyd_text:"<b>Kotec</b> və <b>VİP Kotec</b> otaqlarına da əlavə çarpayı (<b>30 ₼</b>) ilə əlavə nəfər yerləşdirmək olar.<br>Maksimum <b>2 çarpayı</b>.",advice_label:"Məsləhət",advice_text:"Bu qədər qonaq üçün <b>2 ayrı kotec və ya otaq</b> götürə bilərsiniz."
   },
   ru:{
     nav_home:"Главная",nav_rooms:"Номера",nav_gallery:"Галерея",nav_about:"Об отеле",nav_services:"Услуги",nav_restaurant:"Ресторан",nav_campaigns:"Акции",nav_places:"Что рядом",nav_reservation:"Узнать цены",nav_contact:"Контакты",
@@ -833,7 +849,7 @@ const I18N = {
     places_ey:"Рядом",places_title:"Что посмотреть в Огузе",place1_t:"Озёра и реки",place1_s:"Природные озёра и прохладные реки.",place2_t:"Кавказские леса",place2_s:"Прогулки и чистый воздух.",place3_t:"Исторические места",place3_s:"Древние памятники Огуза.",
     resv_ey:"Уточнить наличие",resv_title:"Узнать цены",resv_checkin:"Дата заезда",resv_checkout:"Дата выезда",resv_guests:"Число гостей",resv_room:"Выбор номера",resv_btn:"Узнать через WhatsApp!",resv_note:"При нажатии выбранные данные переносятся в WhatsApp.",
     contact_ey:"Свяжитесь с нами",contact_title:"Контакты",contact_phone:"Телефон",contact_call:"Позвонить",contact_addr:"Адрес",contact_addr_val:"Огузский район, ул. С. Газиева, 21",contact_route:"Построить маршрут",contact_maps:"Google Maps",map_hint:"Мы на карте",
-    select_btn:"Выбрать этот номер",weekend_btn:"Ближайшие выходные",amen_title:"Условия",amen_cap:"Что есть в номерах",endirim:"СКИДКА",resv_pick:"Выберите даты",resv_baddate:"Проверьте даты",gece:"ночей",gun:"дней",total:"Итого",resv_bednote:"Для 6+ гостей в коттедж можно добавить доп. кровать (30 ₼).",ozun_yaz:"Своё число",cust_show:"Показать",combo_label:"Совет",combo_people:"чел.",combo_note:"Цены примерные (будни). Для точного расчёта свяжитесь с нами.",resv_name:"Имя, Фамилия",sub_rooms:"Номера",sub_kotecs:"Коттеджи",weekday:"Будни",weekend:"Выходные",balcony_yes:"С балконом",balcony_no:"Без балкона",room_word:"Комната",price_word:"Цена",qeyd_label:"Примечание",qeyd_text:"В коттеджи <b>Kotec</b> и <b>VİP Kotec</b> можно добавить доп. кровать (<b>30 ₼</b>) для дополнительного гостя.<br>Максимум <b>2 кровати</b>.",advice_label:"Совет",advice_text:"Для такого числа гостей можно взять <b>2 отдельных коттеджа или номера</b>."
+    select_btn:"Выбрать этот номер",fav_only:"Только избранное",fav_empty:"Вы ещё ничего не добавили. Нажмите на сердечко.",weekend_btn:"Ближайшие выходные",amen_title:"Условия",amen_cap:"Что есть в номерах",endirim:"СКИДКА",resv_pick:"Выберите даты",resv_baddate:"Проверьте даты",gece:"ночей",gun:"дней",total:"Итого",resv_bednote:"Для 6+ гостей в коттедж можно добавить доп. кровать (30 ₼).",ozun_yaz:"Своё число",cust_show:"Показать",combo_label:"Совет",combo_people:"чел.",combo_note:"Цены примерные (будни). Для точного расчёта свяжитесь с нами.",resv_name:"Имя, Фамилия",sub_rooms:"Номера",sub_kotecs:"Коттеджи",weekday:"Будни",weekend:"Выходные",balcony_yes:"С балконом",balcony_no:"Без балкона",room_word:"Комната",price_word:"Цена",qeyd_label:"Примечание",qeyd_text:"В коттеджи <b>Kotec</b> и <b>VİP Kotec</b> можно добавить доп. кровать (<b>30 ₼</b>) для дополнительного гостя.<br>Максимум <b>2 кровати</b>.",advice_label:"Совет",advice_text:"Для такого числа гостей можно взять <b>2 отдельных коттеджа или номера</b>."
   },
   en:{
     nav_home:"Home",nav_rooms:"Rooms",nav_gallery:"Gallery",nav_about:"About",nav_services:"Services",nav_restaurant:"Restaurant",nav_campaigns:"Offers",nav_places:"Nearby",nav_reservation:"Check prices",nav_contact:"Contact",
@@ -849,7 +865,7 @@ const I18N = {
     places_ey:"Around",places_title:"Things to see in Oguz",place1_t:"Lakes & rivers",place1_s:"Natural lakes and cool rivers.",place2_t:"Caucasus forests",place2_s:"Walks and fresh air.",place3_t:"Historic sites",place3_s:"Ancient landmarks of Oguz.",
     resv_ey:"Check availability",resv_title:"Check prices",resv_checkin:"Check-in",resv_checkout:"Check-out",resv_guests:"Guests",resv_room:"Room",resv_btn:"Ask on WhatsApp!",resv_note:"On tap, your selection is copied into WhatsApp.",
     contact_ey:"Get in touch",contact_title:"Contact",contact_phone:"Phone",contact_call:"Call",contact_addr:"Address",contact_addr_val:"Oguz district, S. Gaziyev str. 21",contact_route:"Get directions",contact_maps:"Google Maps",map_hint:"Find us on the map",
-    select_btn:"Select this room",weekend_btn:"Nearest weekend",amen_title:"Amenities",amen_cap:"Available in the rooms",endirim:"DISCOUNT",resv_pick:"Select dates",resv_baddate:"Check the dates",gece:"nights",gun:"days",total:"Total",resv_bednote:"For 6+ guests an extra bed (30 ₼) can be added in a cottage.",ozun_yaz:"Custom",cust_show:"Show",combo_label:"Suggestion",combo_people:"guests",combo_note:"Prices are approximate (weekday). Contact us for an exact quote.",resv_name:"Full name",sub_rooms:"Rooms",sub_kotecs:"Cottages",weekday:"Weekday",weekend:"Weekend",balcony_yes:"Balcony",balcony_no:"No balcony",room_word:"Room",price_word:"Price",qeyd_label:"Note",qeyd_text:"An extra bed (<b>30 ₼</b>) can be added in <b>Kotec</b> and <b>VİP Kotec</b> cottages for an additional guest.<br>Up to <b>2 beds</b>.",advice_label:"Tip",advice_text:"For this many guests you can take <b>2 separate cottages or rooms</b>."
+    select_btn:"Select this room",fav_only:"Favorites only",fav_empty:"Nothing added yet. Tap the heart.",weekend_btn:"Nearest weekend",amen_title:"Amenities",amen_cap:"Available in the rooms",endirim:"DISCOUNT",resv_pick:"Select dates",resv_baddate:"Check the dates",gece:"nights",gun:"days",total:"Total",resv_bednote:"For 6+ guests an extra bed (30 ₼) can be added in a cottage.",ozun_yaz:"Custom",cust_show:"Show",combo_label:"Suggestion",combo_people:"guests",combo_note:"Prices are approximate (weekday). Contact us for an exact quote.",resv_name:"Full name",sub_rooms:"Rooms",sub_kotecs:"Cottages",weekday:"Weekday",weekend:"Weekend",balcony_yes:"Balcony",balcony_no:"No balcony",room_word:"Room",price_word:"Price",qeyd_label:"Note",qeyd_text:"An extra bed (<b>30 ₼</b>) can be added in <b>Kotec</b> and <b>VİP Kotec</b> cottages for an additional guest.<br>Up to <b>2 beds</b>.",advice_label:"Tip",advice_text:"For this many guests you can take <b>2 separate cottages or rooms</b>."
   }
 };
 let lang = 'az';
@@ -990,6 +1006,26 @@ function pauseGalTimer(){ clearInterval(galTimer); }
   grid.addEventListener('touchend', resetGalTimer, {passive:true});
   grid.addEventListener('touchcancel', resetGalTimer, {passive:true});
   document.addEventListener('visibilitychange', ()=>{ document.hidden ? pauseGalTimer() : resetGalTimer(); });
+  // крутим галерею ТОЛЬКО когда она видна на экране — иначе анимация зря
+  // работает в фоне и подлагивает прокрутку всей страницы
+  if('IntersectionObserver' in window){
+    const gallerySec = document.getElementById('gallery') || grid;
+    let visible = false;
+    new IntersectionObserver((entries)=>{
+      visible = entries[0].isIntersecting;
+      visible ? resetGalTimer() : pauseGalTimer();
+    }, {threshold: 0.05}).observe(gallerySec);
+  }
+})();
+
+/* Плавное появление блоков при прокрутке (лёгкая анимация) */
+(function revealOnScroll(){
+  if(!('IntersectionObserver' in window)) return;
+  const blocks = document.querySelectorAll('#campaigns .wrap, #rooms .head, #rooms .filter, #roomSection, #kotecSection, #gallery .head, #services .wrap, #restaurant .wrap, #reservation .wrap, #contact .wrap');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, {threshold:0.08, rootMargin:'0px 0px -40px 0px'});
+  blocks.forEach(b=>{ b.classList.add('reveal'); io.observe(b); });
 })();
 
 /* плавная прокрутка по якорям с учётом высоты шапки */
@@ -1248,7 +1284,33 @@ function setGuests(btn){
     window.scrollBy(0, after - before);
   }
 }
-function matches(item){ if(guests==="all") return true; const g=parseInt(guests); return g>=item.min && g<=item.max; }
+function matches(item){
+  if(favOnly && !isFav(item.id)) return false;
+  if(guests==="all") return true;
+  const g=parseInt(guests); return g>=item.min && g<=item.max;
+}
+/* ===== Избранное (сердечки) ===== */
+let FAVS = (function(){ try{ return JSON.parse(localStorage.getItem('favs')||'[]'); }catch(e){ return []; } })();
+let favOnly = false;
+function isFav(id){ return FAVS.indexOf(id) >= 0; }
+function saveFavs(){ try{ localStorage.setItem('favs', JSON.stringify(FAVS)); }catch(e){} }
+function toggleFav(id, e){
+  if(e) e.stopPropagation();
+  const i = FAVS.indexOf(id);
+  if(i>=0) FAVS.splice(i,1); else FAVS.push(id);
+  saveFavs();
+  // обновляем сердечки без полной перерисовки (чтобы не дёргалась прокрутка)
+  document.querySelectorAll('.heart[data-id="'+id+'"]').forEach(h=>{
+    const on=isFav(id); h.classList.toggle('on', on);
+    const svg=h.querySelector('svg'); if(svg) svg.setAttribute('fill', on?'currentColor':'none');
+  });
+  if(favOnly) render();  // в режиме «только избранное» список меняется
+}
+function toggleFavFilter(){
+  favOnly = !favOnly;
+  const b=document.getElementById('favFilterBtn'); if(b) b.classList.toggle('on', favOnly);
+  render();
+}
 function ppRows(w1,w2){ const d=I18N[lang]; return `<div class="pp"><span>${d.weekday}</span><b>${w1} ${CUR}</b></div><div class="pp wknd"><span>${d.weekend}</span><b>${w2} ${CUR}</b></div>`; }
 function renderTiers(tiers){
   let list = tiers;
@@ -1256,6 +1318,7 @@ function renderTiers(tiers){
   return list.map((t,i)=>`<div class="tier" ${i>0?'style="margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)"':''}><div class="tier-lbl">${t.cap}</div>${ppRows(t.wkdy,t.wknd)}</div>`).join('');
 }
 function shotBtn(id){ return `<button class="shot-btn" data-id="${id}" style="display:none" onclick="openGallery('${id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 17l-5-5-6 6"/></svg>Şəkillər</button>`; }
+function heartBtn(id){ const on=isFav(id); return `<button class="heart${on?' on':''}" data-id="${id}" onclick="toggleFav('${id}',event)" aria-label="İstəklər"><svg viewBox="0 0 24 24" fill="${on?'currentColor':'none'}" stroke="currentColor" stroke-width="1.9"><path d="M12 21s-7-4.35-9.5-8.5C.5 8.5 3 5 6.5 5 9 5 11 7 12 8.5 13 7 15 5 17.5 5 21 5 23.5 8.5 21.5 12.5 19 16.65 12 21 12 21z"/></svg></button>`; }
 function renderKotec(k){
   let body;
   if(k.ladder){
@@ -1264,7 +1327,7 @@ function renderKotec(k){
   } else if(k.tiers){ body=renderTiers(k.tiers); } else { body=ppRows(k.wkdy,k.wknd); }
   const beds = k.beds?`<div class="k-beds">${k.beds}</div>`:'';
   const perks = k.perks?`<div class="k-perks">${k.perks.map(p=>`<span class="perk">${p}</span>`).join('')}</div>`:'';
-  return `<div class="kotec${k.feature?' feature':''}"><div class="kotec-top"><div class="no">${k.no}</div><h3>${k.name}</h3><span class="cap-chip">${k.capLabel}</span>${beds}</div><div class="kotec-body">${body}${perks}${shotBtn(k.id)}${selectBtn(k.id)}</div></div>`;
+  return `<div class="kotec${k.feature?' feature':''}">${heartBtn(k.id)}<div class="kotec-top"><div class="no">${k.no}</div><h3>${k.name}</h3><span class="cap-chip">${k.capLabel}</span>${beds}</div><div class="kotec-body">${body}${perks}${shotBtn(k.id)}${selectBtn(k.id)}</div></div>`;
 }
 function renderRoom(r){
   const d=I18N[lang];
@@ -1272,7 +1335,7 @@ function renderRoom(r){
   const cap = r.cap?`<span class="chip">${r.cap}</span>`:'';
   const note = r.note?`<div class="r-note">${r.note}</div>`:'';
   const prices = r.tiers?renderTiers(r.tiers):ppRows(r.wkdy,r.wknd);
-  return `<div class="room"><div class="r-head"><h3>${r.name}</h3>${bal}</div><div class="r-meta"><span class="r-nums">${d.room_word} <b>${r.nums}</b></span>${cap}</div>${note}<div class="r-prices">${prices}</div>${shotBtn(r.id)}${selectBtn(r.id)}</div>`;
+  return `<div class="room">${heartBtn(r.id)}<div class="r-head"><h3>${r.name}</h3>${bal}</div><div class="r-meta"><span class="r-nums">${d.room_word} <b>${r.nums}</b></span>${cap}</div>${note}<div class="r-prices">${prices}</div>${shotBtn(r.id)}${selectBtn(r.id)}</div>`;
 }
 function selectBtn(id){
   return `<button class="sel-btn" onclick="selectRoom('${id}')"><span data-i18n="select_btn">Bu otağı seç</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>`;
@@ -1333,6 +1396,10 @@ function render(){
   } else kSec.style.display='none';
   if(rs.length){ rSec.style.display=''; document.getElementById('roomResults').innerHTML = rs.map(renderRoom).join(''); }
   else rSec.style.display='none';
+  if(favOnly && !ks.length && !rs.length){
+    rSec.style.display='';
+    document.getElementById('roomResults').innerHTML = `<div class="fav-empty" data-i18n="fav_empty">${I18N[lang].fav_empty}</div>`;
+  }
   wirePhotoButtons();
 }
 
