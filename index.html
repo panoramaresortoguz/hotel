@@ -1004,6 +1004,11 @@ function prevSlide(){ if(slideEls.length<2) return; showSlide((slideIdx-1+slideE
 function goSlide(i){ showSlide(i); resetTimer(); }
 function resetTimer(){ clearInterval(slideTimer); if(slideEls.length>1) slideTimer = setInterval(()=>showSlide((slideIdx+1)%slideEls.length), 3000); }
 
+/* Тихо проверяет наличие файла (HEAD-запрос, без ошибки 404 в консоли) */
+function imgExists(url){
+  return fetch(url, {method:'HEAD'}).then(r=>r.ok).catch(()=>false);
+}
+
 /* ==================================================================
    КОЛИЧЕСТВО ФОТО В ПАПКАХ — меняйте эти числа при добавлении фото.
    Сайт грузит ровно столько, сколько указано (без лишних запросов).
@@ -1213,7 +1218,7 @@ const ROOMS = [
     photoGroups:[ {base:"otaq-9", label:"Otaq 9, 10"}, {base:"otaq-23", label:"Otaq 23, 27"} ] },
   { id:"luks15", name:"Lüks otaq", nums:"15", cap:"4 nəfər", min:4, max:4, balcony:true, note:"1 otaqda: 1 cüt + 2 ayrı", wkdy:180, wknd:200 },
   { id:"Double12", name:"Double · geniş", nums:"12, 14", cap:"4 nəfər", min:4, max:4, balcony:true, note:"1 cüt + 2 ayrı", wkdy:200, wknd:220,
-    photoGroups:[ {base:"otaq-12", label:"Otaq 12, 14"} ] },
+    photoGroups:[ {base:"otaq-12", label:"Otaq 12"}, {base:"otaq-14", label:"Otaq 14"} ] },
 ];
 
 /* выбор номера заполняется функцией fillRoomSelect() при старте */
@@ -1297,15 +1302,14 @@ function wirePhotoButtons(done){
                 : (item&&item.nums)? item.nums.split(',').map(s=>'otaq-'+s.trim()) : [id];
     bases.forEach(base=>{
       left++;
-      const p = new Image();
       const settle = () => { if(--left === 0) finish(); };
-      p.onload = () => {
-        photoCache[id] = true;
-        document.querySelectorAll('.shot-btn[data-id="'+id+'"]').forEach(b=>b.style.display='');
+      imgExists('photos/'+base+'-1.jpg').then(ok=>{
+        if(ok){
+          photoCache[id] = true;
+          document.querySelectorAll('.shot-btn[data-id="'+id+'"]').forEach(b=>b.style.display='');
+        }
         settle();
-      };
-      p.onerror = settle;
-      p.src = 'photos/'+base+'-1.jpg';
+      });
     });
   });
   if(left === 0) finish();
@@ -1323,23 +1327,27 @@ function openGallery(id){
   else if(item && item.nums) item.nums.split(',').map(s=>s.trim()).forEach(n=>units.push({base:'otaq-'+n,label:'Otaq '+n}));
   else if(item) units.push({base:item.id,label:item.no||item.name});
   units.forEach((u,ui)=>{
-    // грузим по порядку 1,2,3… и останавливаемся, когда файла больше нет
-    (function next(i){
-      if(i > MAX_PHOTOS) return;
-      const img = new Image();
-      img.onload = () => {
-        const a=document.createElement('div'); a.className='gph';
-        a.style.order=ui*100+i; a.style.cursor='zoom-in'; a.style.aspectRatio='1 / 1'; a.style.overflow='hidden';
-        img.style.width='100%'; img.style.height='100%'; img.style.objectFit='cover';
-        a.onclick=()=>openLightbox(img.src);
-        const cap=document.createElement('span'); cap.className='cap'; cap.textContent=u.label;
-        a.appendChild(img); a.appendChild(cap); grid.appendChild(a);
-        empty.style.display='none';
-        next(i+1);
-      };
-      img.onerror = () => {};   // фото нет — дальше не ищем
-      img.src = 'photos/'+u.base+'-'+i+'.jpg';
-    })(1);
+    // проверяем ВСЕ номера 1..MAX — если какого-то фото нет, пропускаем его,
+    // но продолжаем дальше (устойчиво к пропущенным номерам)
+    for(let i=1;i<=MAX_PHOTOS;i++){
+      (function(idx){
+        const url = 'photos/'+u.base+'-'+idx+'.jpg';
+        imgExists(url).then(ok=>{
+          if(!ok) return;
+          const img = new Image();
+          img.onload = () => {
+            const a=document.createElement('div'); a.className='gph';
+            a.style.order = ui*1000 + idx; a.style.cursor='zoom-in'; a.style.aspectRatio='1 / 1'; a.style.overflow='hidden';
+            img.style.width='100%'; img.style.height='100%'; img.style.objectFit='cover';
+            a.onclick=()=>openLightbox(img.src);
+            const cap=document.createElement('span'); cap.className='cap'; cap.textContent=u.label;
+            a.appendChild(img); a.appendChild(cap); grid.appendChild(a);
+            empty.style.display='none';
+          };
+          img.src = url;
+        });
+      })(i);
+    }
   });
 }
 function closeGallery(){ document.getElementById('galleryModal').classList.remove('open'); }
