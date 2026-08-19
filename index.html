@@ -193,15 +193,8 @@
   .room-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
   .kotec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
   .kotec,.room{background:#fff;border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column}
-  .room{padding:0;overflow:hidden}
+  .room{padding:16px 18px;gap:9px}
   .kotec{overflow:hidden}
-  .rcard-ph{position:relative;height:172px;overflow:hidden;background:linear-gradient(135deg,#5E7360,#2C4A3B)}
-  .rcard-ph img{width:100%;height:100%;object-fit:cover;display:block}
-  .rcard-badge{position:absolute;top:12px;right:12px;background:rgba(251,248,241,.95);color:var(--pine);font-size:12px;font-weight:700;padding:5px 12px;border-radius:100px;box-shadow:0 4px 12px rgba(0,0,0,.18)}
-  .rcard-shot{position:absolute;left:12px;bottom:12px;align-items:center;gap:6px;background:rgba(28,52,40,.82);color:#fff;border:none;border-radius:100px;padding:7px 13px;font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;backdrop-filter:blur(4px);transition:background .15s}
-  .rcard-shot:hover{background:rgba(28,52,40,.95)}
-  .rcard-shot svg{width:14px;height:14px}
-  .rcard-body{padding:16px 18px;display:flex;flex-direction:column;gap:9px;flex-grow:1}
   .kotec.feature{border-color:var(--brass);box-shadow:0 0 0 1px var(--brass)}
   .kotec-top{padding:15px 18px;border-bottom:1px solid var(--line)}
   .kotec-top .no{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--brass);font-weight:700}
@@ -1263,14 +1256,6 @@ function renderTiers(tiers){
   return list.map((t,i)=>`<div class="tier" ${i>0?'style="margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)"':''}><div class="tier-lbl">${t.cap}</div>${ppRows(t.wkdy,t.wknd)}</div>`).join('');
 }
 function shotBtn(id){ return `<button class="shot-btn" data-id="${id}" style="display:none" onclick="openGallery('${id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 17l-5-5-6 6"/></svg>Şəkillər</button>`; }
-/* фото-шапка карточки: первое фото номера + бейдж вместимости + кнопка Şəkillər */
-function cardPhoto(item, capText){
-  const base = (item.photoGroups && item.photoGroups[0]) ? item.photoGroups[0].base
-             : (item.nums ? 'otaq-'+item.nums.split(',')[0].trim() : item.id);
-  const badge = capText ? `<span class="rcard-badge">${capText}</span>` : '';
-  const shot = `<button class="rcard-shot shot-btn" data-id="${item.id}" style="display:none" onclick="openGallery('${item.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 17l-5-5-6 6"/></svg>Şəkillər</button>`;
-  return `<div class="rcard-ph"><img src="photos/${base}-1.jpg" loading="lazy" alt="${(item.name||'').replace(/"/g,'')}" onerror="this.remove()">${badge}${shot}</div>`;
-}
 function renderKotec(k){
   let body;
   if(k.ladder){
@@ -1279,15 +1264,15 @@ function renderKotec(k){
   } else if(k.tiers){ body=renderTiers(k.tiers); } else { body=ppRows(k.wkdy,k.wknd); }
   const beds = k.beds?`<div class="k-beds">${k.beds}</div>`:'';
   const perks = k.perks?`<div class="k-perks">${k.perks.map(p=>`<span class="perk">${p}</span>`).join('')}</div>`:'';
-  return `<div class="kotec${k.feature?' feature':''}">${cardPhoto(k, k.capLabel||'')}<div class="kotec-top"><div class="no">${k.no}</div><h3>${k.name}</h3>${beds}</div><div class="kotec-body">${body}${perks}${selectBtn(k.id)}</div></div>`;
+  return `<div class="kotec${k.feature?' feature':''}"><div class="kotec-top"><div class="no">${k.no}</div><h3>${k.name}</h3><span class="cap-chip">${k.capLabel}</span>${beds}</div><div class="kotec-body">${body}${perks}${shotBtn(k.id)}${selectBtn(k.id)}</div></div>`;
 }
 function renderRoom(r){
   const d=I18N[lang];
   const bal = r.balcony===true?`<span class="bdg b-yes">${d.balcony_yes}</span>`:r.balcony===false?`<span class="bdg b-no">${d.balcony_no}</span>`:'';
+  const cap = r.cap?`<span class="chip">${r.cap}</span>`:'';
   const note = r.note?`<div class="r-note">${r.note}</div>`:'';
   const prices = r.tiers?renderTiers(r.tiers):ppRows(r.wkdy,r.wknd);
-  const capText = r.cap || (r.min&&r.max ? (r.min===r.max ? r.min+' nəfər' : r.min+'–'+r.max+' nəfər') : '');
-  return `<div class="room">${cardPhoto(r, capText)}<div class="rcard-body"><div class="r-head"><h3>${r.name}</h3>${bal}</div><div class="r-meta"><span class="r-nums">${d.room_word} <b>${r.nums}</b></span></div>${note}<div class="r-prices">${prices}</div>${selectBtn(r.id)}</div></div>`;
+  return `<div class="room"><div class="r-head"><h3>${r.name}</h3>${bal}</div><div class="r-meta"><span class="r-nums">${d.room_word} <b>${r.nums}</b></span>${cap}</div>${note}<div class="r-prices">${prices}</div>${shotBtn(r.id)}${selectBtn(r.id)}</div>`;
 }
 function selectBtn(id){
   return `<button class="sel-btn" onclick="selectRoom('${id}')"><span data-i18n="select_btn">Bu otağı seç</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>`;
