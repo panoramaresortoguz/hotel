@@ -202,8 +202,15 @@
   .fav-filter svg{width:15px;height:15px}
   .fav-filter.on{background:#C1553F !important;color:#fff !important;border-color:#C1553F !important}
   .fav-empty{text-align:center;color:var(--muted);font-size:15px;padding:34px 10px}
-  .discount-note{display:inline-flex;align-items:center;gap:8px;margin-top:12px;background:#C1553F;color:#fff;font-size:13.5px;font-weight:700;padding:8px 16px;border-radius:100px;box-shadow:0 6px 16px -6px rgba(193,85,63,.6)}
-  .discount-note svg{width:16px;height:16px}
+  .camp-marquee{position:relative;overflow:hidden;margin:0 0 20px;width:100%;background:linear-gradient(90deg,#1C3428,#2C4A3B);color:var(--ivory);border-radius:14px;border:1px solid rgba(180,137,78,.4);box-shadow:0 10px 26px -12px rgba(20,38,29,.7)}
+  .camp-marquee-track{display:inline-flex;align-items:center;white-space:nowrap;padding:12px 0;will-change:transform;animation:campMove 20s linear infinite}
+  .camp-marquee:hover .camp-marquee-track{animation-play-state:paused}
+  .camp-marquee-item{display:inline-flex;align-items:center;gap:11px;font-size:15px;font-weight:700;letter-spacing:.02em;padding:0 30px}
+  .camp-marquee-item svg{width:18px;height:18px;color:var(--brass-light);flex-shrink:0}
+  .camp-marquee-item b{color:#E9C77E;font-weight:800}
+  .camp-marquee-dot{color:var(--brass);opacity:.55}
+  @keyframes campMove{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  @media(prefers-reduced-motion:reduce){ .camp-marquee-track{animation:none;justify-content:center;width:100%} }
   /* плавное появление блоков при прокрутке */
   .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
   .reveal.in{opacity:1;transform:none}
@@ -513,6 +520,7 @@
       <span class="eyebrow" data-i18n="camp_ey">Xüsusi təkliflər</span>
       <h2 data-i18n="camp_title">Kampaniyalar</h2>
     </div>
+    <div class="camp-marquee" aria-label="endirim"><div class="camp-marquee-track" id="campMarquee"></div></div>
     <div class="bonus-banner" onclick="openBonus()">
       <div class="bb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/><path d="M6.5 15H11"/></svg></div>
       <div class="bb-text">
@@ -532,7 +540,6 @@
     <div class="sec-head">
       <span class="eyebrow" data-i18n="rooms_ey">Yerləşmə</span>
       <h2 data-i18n="rooms_title">Otaqlar və qiymətlər</h2>
-      <div class="discount-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M9 9h.01M15 15h.01M16 8l-8 8"/><circle cx="12" cy="12" r="9"/></svg><span data-i18n="discount_note">Bütün qiymətlər 20% endirimlə göstərilib</span></div>
     </div>
     <div class="filter">
       <div class="q" data-i18n="rooms_filter">Adam sayını seç</div>
@@ -827,12 +834,12 @@ const I18N = {
     hero_tag:"Təbiətin qoynunda rahatlıq və kef",hero_cta1:"Otaqlara bax",hero_cta2:"Qiymətləri öyrən",
     intro_ey:"Xoş gəlmisiniz",intro_title:"Dağların qoynunda istirahət",intro_text:"Oğuzun təmiz havası, açıq hovuz, ləziz mətbəx və hər axşam canlı musiqi — ailəvi və dostyana istirahət üçün ideal məkan.",
     stat_rooms:"otaq növü",stat_kotec:"kotec",stat_service:"xidmət",
-    rooms_ey:"Yerləşmə",rooms_title:"Otaqlar və qiymətlər",discount_note:"Bütün qiymətlər 20% endirimlə göstərilib",rooms_filter:"Adam sayını seç",
+    rooms_ey:"Yerləşmə",rooms_title:"Otaqlar və qiymətlər",rooms_filter:"Adam sayını seç",
     gallery_ey:"Fotolar",gallery_title:"Fotoqalereya",gallery_hint:"Resortun və otaqların fotoları.",gallery_empty:"Şəkillər tezliklə əlavə olunacaq.",
     about_ey:"Resort haqqında",about_title:"Panorama Resort Oğuz",about_text:"Şəhər səs-küyündən uzaqda, təbiətlə əhatələnmiş rahat resort. Burada açıq hovuz, sauna, əyləncə zonaları və hər zövqə uyğun otaqlar sizi gözləyir.",
     services_ey:"Qiymətə daxildir",services_title:"Xidmətlər",svc_breakfast:"Səhər yeməyi",svc_breakfast_s:"Şved stolu · 09:00–11:00",svc_pool:"Açıq hovuz",svc_pool_s:"Yay mövsümü",svc_games:"Əyləncəli oyunlar",svc_games_s:"Bilyard, tennis, stolüstü xokkey, uşaq əyləncəsi",svc_music:"Canlı musiqi",svc_music_s:"Hər axşam · 19:00–23:00",svc_wifi:"Pulsuz Wi-Fi",svc_wifi_s:"Bütün ərazidə",svc_parking:"Pulsuz Parking",svc_parking_s:"Qonaqlar üçün",svc_bed:"Əlavə çarpayı",svc_child:"0–5 yaş uşaq (1 nəfər)",svc_free:"pulsuz",
     rest_ey:"Dad və zövq",rest_title:"Restoran",rest_text:"Yerli və milli mətbəxin ən dadlı yeməkləri, təzə məhsullar və xüsusi atmosfer.",rest_btn:"Restoran menyusu",
-    camp_ey:"Xüsusi təkliflər",camp_title:"Kampaniyalar",bonus_t:"Bonus Kartı",bonus_s:"Hər ödənişdən 10% bonus qazan",bonus_s2:"Şərtlər üçün toxun",bonus_how:"Necə işləyir?",bonus_text:"Oteldə hər ödənişin 10%-i bonus kartınıza qaytarılır. Bonuslar yığılır və kifayət qədər məbləğ toplandıqda onunla növbəti gecələməni ödəyə bilərsiniz.",bonus_cond:"Şərt: bonusdan istifadə üçün lazımi məbləğ tam yığılmalıdır.",
+    camp_ey:"Xüsusi təkliflər",camp_title:"Kampaniyalar",camp_note:"Qiymətlər hal-hazırda endirimdədir",bonus_t:"Bonus Kartı",bonus_s:"Hər ödənişdən 10% bonus qazan",bonus_s2:"Şərtlər üçün toxun",bonus_how:"Necə işləyir?",bonus_text:"Oteldə hər ödənişin 10%-i bonus kartınıza qaytarılır. Bonuslar yığılır və kifayət qədər məbləğ toplandıqda onunla növbəti gecələməni ödəyə bilərsiniz.",bonus_cond:"Şərt: bonusdan istifadə üçün lazımi məbləğ tam yığılmalıdır.",
     places_ey:"Ətrafda",places_title:"Oğuzda gəzməli yerlər",place1_t:"Göllər və çaylar",place1_s:"Təbii göllər və sərin çaylar.",place2_t:"Qafqaz meşələri",place2_s:"Piyada gəzintilər və təmiz hava.",place3_t:"Tarixi abidələr",place3_s:"Oğuzun qədim məbədləri.",
     resv_ey:"Yer ayırt",resv_title:"Qiymətləri öyrən",resv_checkin:"Giriş tarixi",resv_checkout:"Çıxış tarixi",resv_guests:"Qonaq sayı",resv_room:"Otaq seçimi",resv_btn:"WhatsApp ilə məlumat əldə et!",resv_note:"Düyməyə basdıqda seçdiyiniz məlumatlar WhatsApp-a köçürülür.",
     contact_ey:"Bizimlə əlaqə",contact_title:"Əlaqə",contact_phone:"Telefon",contact_call:"Zəng et",contact_addr:"Ünvan",contact_addr_val:"Oğuz rayonu, S. Qazıyev küç. 21",contact_route:"Marşrutu aç",contact_maps:"Google Maps",map_hint:"Xəritədə yerimiz",
@@ -843,12 +850,12 @@ const I18N = {
     hero_tag:"Отдых и уют в объятиях природы",hero_cta1:"Смотреть номера",hero_cta2:"Узнать цены",
     intro_ey:"Добро пожаловать",intro_title:"Отдых среди гор",intro_text:"Чистый воздух Огуза, открытый бассейн, вкусная кухня и живая музыка каждый вечер — идеальное место для семейного и дружеского отдыха.",
     stat_rooms:"типов номеров",stat_kotec:"коттеджа",stat_service:"сервис",
-    rooms_ey:"Размещение",rooms_title:"Номера и цены",discount_note:"Все цены указаны со скидкой 20%",rooms_filter:"Выберите число гостей",
+    rooms_ey:"Размещение",rooms_title:"Номера и цены",rooms_filter:"Выберите число гостей",
     gallery_ey:"Фото",gallery_title:"Галерея",gallery_hint:"Фотографии отеля и номеров.",gallery_empty:"Фотографии скоро появятся.",
     about_ey:"Об отеле",about_title:"Panorama Resort Oğuz",about_text:"Уютный отель вдали от городского шума, в окружении природы. Открытый бассейн, сауна, зоны отдыха и номера на любой вкус.",
     services_ey:"Входит в цену",services_title:"Услуги",svc_breakfast:"Завтрак",svc_breakfast_s:"Шведский стол · 09:00–11:00",svc_pool:"Открытый бассейн",svc_pool_s:"Летний сезон",svc_games:"Игры и развлечения",svc_games_s:"Бильярд, теннис, настольный хоккей, детские развлечения",svc_music:"Живая музыка",svc_music_s:"Каждый вечер · 19:00–23:00",svc_wifi:"Бесплатный Wi-Fi",svc_wifi_s:"На всей территории",svc_parking:"Бесплатная парковка",svc_parking_s:"Для гостей",svc_bed:"Доп. кровать",svc_child:"Дети 0–5 лет (1 реб.)",svc_free:"бесплатно",
     rest_ey:"Вкус и уют",rest_title:"Ресторан",rest_text:"Лучшие блюда местной и национальной кухни, свежие продукты и особая атмосфера.",rest_btn:"Меню ресторана",
-    camp_ey:"Спецпредложения",camp_title:"Акции",bonus_t:"Бонусная карта",bonus_s:"10% бонусов с каждой оплаты",bonus_s2:"Нажмите для условий",bonus_how:"Как это работает?",bonus_text:"10% каждой оплаты возвращается на бонусную карту. Бонусы накапливаются, и когда собрана нужная сумма — ими можно оплатить следующую ночь.",bonus_cond:"Условие: для использования нужная сумма должна быть собрана полностью.",
+    camp_ey:"Спецпредложения",camp_title:"Акции",camp_note:"Сейчас действуют скидки на цены",bonus_t:"Бонусная карта",bonus_s:"10% бонусов с каждой оплаты",bonus_s2:"Нажмите для условий",bonus_how:"Как это работает?",bonus_text:"10% каждой оплаты возвращается на бонусную карту. Бонусы накапливаются, и когда собрана нужная сумма — ими можно оплатить следующую ночь.",bonus_cond:"Условие: для использования нужная сумма должна быть собрана полностью.",
     places_ey:"Рядом",places_title:"Что посмотреть в Огузе",place1_t:"Озёра и реки",place1_s:"Природные озёра и прохладные реки.",place2_t:"Кавказские леса",place2_s:"Прогулки и чистый воздух.",place3_t:"Исторические места",place3_s:"Древние памятники Огуза.",
     resv_ey:"Уточнить наличие",resv_title:"Узнать цены",resv_checkin:"Дата заезда",resv_checkout:"Дата выезда",resv_guests:"Число гостей",resv_room:"Выбор номера",resv_btn:"Узнать через WhatsApp!",resv_note:"При нажатии выбранные данные переносятся в WhatsApp.",
     contact_ey:"Свяжитесь с нами",contact_title:"Контакты",contact_phone:"Телефон",contact_call:"Позвонить",contact_addr:"Адрес",contact_addr_val:"Огузский район, ул. С. Газиева, 21",contact_route:"Построить маршрут",contact_maps:"Google Maps",map_hint:"Мы на карте",
@@ -859,12 +866,12 @@ const I18N = {
     hero_tag:"Comfort and leisure surrounded by nature",hero_cta1:"View rooms",hero_cta2:"Check prices",
     intro_ey:"Welcome",intro_title:"A retreat among the mountains",intro_text:"Oguz's fresh air, an open-air pool, delicious cuisine and live music every evening — the ideal place for family and friends.",
     stat_rooms:"room types",stat_kotec:"cottages",stat_service:"service",
-    rooms_ey:"Stay",rooms_title:"Rooms & prices",discount_note:"All prices shown with 20% discount",rooms_filter:"Select number of guests",
+    rooms_ey:"Stay",rooms_title:"Rooms & prices",rooms_filter:"Select number of guests",
     gallery_ey:"Photos",gallery_title:"Gallery",gallery_hint:"Photos of the resort and rooms.",gallery_empty:"Photos coming soon.",
     about_ey:"About",about_title:"Panorama Resort Oğuz",about_text:"A cozy resort away from the city noise, surrounded by nature. Open-air pool, sauna, leisure areas and rooms for every taste.",
     services_ey:"Included in price",services_title:"Services",svc_breakfast:"Breakfast",svc_breakfast_s:"Buffet · 09:00–11:00",svc_pool:"Open-air pool",svc_pool_s:"Summer season",svc_games:"Games & fun",svc_games_s:"Billiards, tennis, table hockey, kids' fun",svc_music:"Live music",svc_music_s:"Every evening · 19:00–23:00",svc_wifi:"Free Wi-Fi",svc_wifi_s:"Throughout the property",svc_parking:"Free Parking",svc_parking_s:"For guests",svc_bed:"Extra bed",svc_child:"Kids 0–5 (1 child)",svc_free:"free",
     rest_ey:"Taste & comfort",rest_title:"Restaurant",rest_text:"The finest local and national dishes, fresh produce and a special atmosphere.",rest_btn:"Restaurant menu",
-    camp_ey:"Special offers",camp_title:"Offers",bonus_t:"Bonus Card",bonus_s:"Earn 10% back on every payment",bonus_s2:"Tap for conditions",bonus_how:"How it works",bonus_text:"10% of every payment is returned to your bonus card. Bonuses add up, and once you've collected enough you can pay for your next night with them.",bonus_cond:"Condition: the full amount must be collected to use the bonus.",
+    camp_ey:"Special offers",camp_title:"Offers",camp_note:"Prices are currently discounted",bonus_t:"Bonus Card",bonus_s:"Earn 10% back on every payment",bonus_s2:"Tap for conditions",bonus_how:"How it works",bonus_text:"10% of every payment is returned to your bonus card. Bonuses add up, and once you've collected enough you can pay for your next night with them.",bonus_cond:"Condition: the full amount must be collected to use the bonus.",
     places_ey:"Around",places_title:"Things to see in Oguz",place1_t:"Lakes & rivers",place1_s:"Natural lakes and cool rivers.",place2_t:"Caucasus forests",place2_s:"Walks and fresh air.",place3_t:"Historic sites",place3_s:"Ancient landmarks of Oguz.",
     resv_ey:"Check availability",resv_title:"Check prices",resv_checkin:"Check-in",resv_checkout:"Check-out",resv_guests:"Guests",resv_room:"Room",resv_btn:"Ask on WhatsApp!",resv_note:"On tap, your selection is copied into WhatsApp.",
     contact_ey:"Get in touch",contact_title:"Contact",contact_phone:"Phone",contact_call:"Call",contact_addr:"Address",contact_addr_val:"Oguz district, S. Gaziyev str. 21",contact_route:"Get directions",contact_maps:"Google Maps",map_hint:"Find us on the map",
@@ -884,6 +891,7 @@ function applyLang(l){
   document.querySelectorAll('.lang-menu button').forEach(b=>b.classList.toggle('on', b.dataset.l===l));
   try{ localStorage.setItem('lang', l); }catch(e){}
   if(typeof render==='function') render();
+  if(typeof renderCampMarquee==='function') renderCampMarquee();
   if(typeof renderAmenities==='function') renderAmenities();
   if(typeof updateReservation==='function') updateReservation();
 }
@@ -1292,7 +1300,15 @@ function matches(item){
   if(guests==="all") return true;
   const g=parseInt(guests); return g>=item.min && g<=item.max;
 }
-/* ===== Избранное (сердечки) ===== */
+/* Бегущая надпись о скидке в разделе Kampaniyalar */
+function renderCampMarquee(){
+  const track = document.getElementById('campMarquee');
+  if(!track) return;
+  const txt = (I18N[lang] && I18N[lang].camp_note) || 'Qiymətlər hal-hazırda <b>20% ENDİRİM</b> ilə';
+  const icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M9 9h.01M15 15h.01M16 8l-8 8"/><circle cx="12" cy="12" r="9"/></svg>';
+  const one = `<span class="camp-marquee-item">${icon}${txt}</span><span class="camp-marquee-dot">◆</span>`;
+  track.innerHTML = one.repeat(8);   // повтор для непрерывной ленты
+}
 let FAVS = (function(){ try{ return JSON.parse(localStorage.getItem('favs')||'[]'); }catch(e){ return []; } })();
 let favOnly = false;
 function isFav(id){ return FAVS.indexOf(id) >= 0; }
