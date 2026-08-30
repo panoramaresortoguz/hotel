@@ -203,8 +203,9 @@
   .fav-filter.on{background:#C1553F !important;color:#fff !important;border-color:#C1553F !important}
   .fav-empty{text-align:center;color:var(--muted);font-size:15px;padding:34px 10px}
   .camp-marquee{position:relative;overflow:hidden;margin:0 0 20px;width:100%;background:linear-gradient(90deg,#1C3428,#2C4A3B);color:var(--ivory);border-radius:14px;border:1px solid rgba(180,137,78,.4);box-shadow:0 10px 26px -12px rgba(20,38,29,.7)}
-  .camp-marquee-track{display:inline-flex;align-items:center;white-space:nowrap;padding:12px 0;will-change:transform;animation:campMove 20s linear infinite}
-  .camp-marquee:hover .camp-marquee-track{animation-play-state:paused}
+  .camp-marquee-track{display:inline-flex;align-items:center;white-space:nowrap;padding:12px 0;will-change:transform;animation:campMove 20s linear infinite;animation-play-state:paused}
+  .camp-marquee.ready .camp-marquee-track{animation-play-state:running}
+  .camp-marquee.ready:hover .camp-marquee-track{animation-play-state:paused}
   .camp-marquee-item{display:inline-flex;align-items:center;gap:11px;font-size:15px;font-weight:700;letter-spacing:.02em;padding:0 30px}
   .camp-marquee-item svg{width:18px;height:18px;color:var(--brass-light);flex-shrink:0}
   .camp-marquee-item b{color:#E9C77E;font-weight:800}
