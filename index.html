@@ -1268,7 +1268,7 @@ const ROOMS = [
     photoGroups:[ {base:"otaq-24", label:"Otaq 24, 25, 26"} ] },
   { id:"luks-genis", name:"Lüks otaq · geniş", nums:"11, 13, 16, 17, 18, 20", cap:"2 nəfər", min:2, max:2, balcony:true, note:"11, 13, 16 — 2 tək · 17, 18, 20 — 1 cüt", wkdy:100, wknd:120,
     photoGroups:[ {base:"otaq-11", label:"Otaq 11, 13, 16"}, {base:"otaq-17", label:"Otaq 17, 18, 20"} ] },
-  { id:"Double-21-22", name:"Double otaq", nums:"21, 22", cap:"2 nəfər", min:2, max:2, balcony:false, note:"21 — 1 cüt · 22 — 2 tək", wkdy:100, wknd:120 },
+  { id:"Double-21-22", name:"Double otaq", nums:"21, 22", cap:"2 nəfər", min:2, max:2, balcony:false, note:"21 — 1 cüt · 22 — 2 tək", wkdy:80, wknd:100 },
   { id:"Double-genis", name:"Double · geniş", nums:"14", balcony:true, min:2, max:4, note:"1 cüt + 1 divan",
     photoGroups:[ {base:"otaq-14", label:"Otaq 14"} ],
     tiers:[ {cap:"2 nəfər", min:2, max:2, wkdy:130, wknd:150}, {cap:"3 nəfər", min:3, max:3, wkdy:150, wknd:170}, {cap:"4 nəfər", min:4, max:4, wkdy:180, wknd:200} ] },
@@ -1309,13 +1309,19 @@ function renderCampMarquee(){
   const icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M9 9h.01M15 15h.01M16 8l-8 8"/><circle cx="12" cy="12" r="9"/></svg>';
   const one = `<span class="camp-marquee-item">${icon}${txt}</span><span class="camp-marquee-dot">◆</span>`;
   track.innerHTML = one.repeat(8);   // повтор для непрерывной ленты
+  const box = track.closest('.camp-marquee');
+  // запускаем бег ТОЛЬКО после полной загрузки страницы (шрифты/картинки) —
+  // иначе на первом заходе анимация дёргается
+  function startWhenReady(){ if(box) box.classList.add('ready'); }
+  if(document.readyState === 'complete'){ setTimeout(startWhenReady, 300); }
+  else { window.addEventListener('load', ()=> setTimeout(startWhenReady, 300), {once:true}); }
   // крутим только когда раздел виден — иначе анимация зря грузит телефон
-  if('IntersectionObserver' in window && !track._io){
-    const sec = document.getElementById('campaigns') || track;
-    track._io = new IntersectionObserver((e)=>{
-      track.style.animationPlayState = e[0].isIntersecting ? 'running' : 'paused';
+  if('IntersectionObserver' in window && box && !box._io){
+    const sec = document.getElementById('campaigns') || box;
+    box._io = new IntersectionObserver((e)=>{
+      track.style.animationPlayState = e[0].isIntersecting ? '' : 'paused';
     }, {threshold:0});
-    track._io.observe(sec);
+    box._io.observe(sec);
   }
 }
 let FAVS = (function(){ try{ return JSON.parse(localStorage.getItem('favs')||'[]'); }catch(e){ return []; } })();
