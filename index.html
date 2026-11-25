@@ -1074,6 +1074,7 @@ function imgExists(url){
 const SLIDER_COUNT   = 3;   // папка slider/     (slider-1.jpg … slider-N.jpg)
 const GALLERY_COUNT  = 6;   // папка qalereya/   (qalereya-1.jpg … qalereya-N.jpg)
 const RESTORAN_COUNT = 4;   // папка restoran/   (restoran-1.jpg … restoran-N.jpg)
+const PHOTO_VER = '20261125a';  // версия фото: меняй, чтобы сбросить кэш картинок
 
 (function buildSlider(){
   function addSlide(src){
@@ -1093,7 +1094,7 @@ const RESTORAN_COUNT = 4;   // папка restoran/   (restoran-1.jpg … restor
     const img = new Image();
     img.onload = () => { addSlide(img.src); next(n+1); };
     img.onerror = () => next(n+1);
-    img.src = `slider/slider-${n}.jpg`;
+    img.src = `slider/slider-${n}.jpg?v=${PHOTO_VER}`;
   }
   next(1);
 })();
@@ -1136,9 +1137,9 @@ function buildRestSlider(){
       const png = new Image();
       png.onload = () => { addSlide(png.src); next(n+1); };
       png.onerror = () => next(n+1);
-      png.src = `restoran/restoran-${n}.png`;
+      png.src = `restoran/restoran-${n}.png?v=${PHOTO_VER}`;
     };
-    img.src = `restoran/restoran-${n}.jpg`;
+    img.src = `restoran/restoran-${n}.jpg?v=${PHOTO_VER}`;
   }
   next(1);
 }
@@ -1181,7 +1182,7 @@ function loadGallery(){
       loadNext(i+1);
     };
     img.onerror = () => loadNext(i+1);
-    img.src = `qalereya/qalereya-${i}.jpg`;
+    img.src = `qalereya/qalereya-${i}.jpg?v=${PHOTO_VER}`;
   }
   loadNext(1);
 }
@@ -1455,7 +1456,7 @@ function wirePhotoButtons(done){
     bases.forEach(base=>{
       left++;
       const settle = () => { if(--left === 0) finish(); };
-      imgExists('photos/'+base+'-1.jpg').then(ok=>{
+      imgExists('photos/'+base+'-1.jpg?v='+PHOTO_VER).then(ok=>{
         if(ok){
           photoCache[id] = true;
           document.querySelectorAll('.shot-btn[data-id="'+id+'"]').forEach(b=>b.style.display='');
@@ -1483,7 +1484,7 @@ function openGallery(id){
     // но продолжаем дальше (устойчиво к пропущенным номерам)
     for(let i=1;i<=MAX_PHOTOS;i++){
       (function(idx){
-        const url = 'photos/'+u.base+'-'+idx+'.jpg';
+        const url = 'photos/'+u.base+'-'+idx+'.jpg?v='+PHOTO_VER;
         imgExists(url).then(ok=>{
           if(!ok) return;
           const img = new Image();
